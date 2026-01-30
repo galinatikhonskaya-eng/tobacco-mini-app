@@ -1,1 +1,30 @@
-
+tobacco-shop-tg-app/
+├── public/
+│   ├── index.html
+│   └── favicon.ico
+├── src/
+│   ├── components/
+│   │   ├── AgeVerification.jsx
+│   │   ├── AgeVerification.css
+│   │   ├── Navbar.jsx
+│   │   └── Navbar.css
+│   ├── screens/
+│   │   ├── MainScreen.jsx
+│   │   ├── MainScreen.css
+│   │   ├── Catalog.jsx
+│   │   ├── Catalog.css
+│   │   ├── ProductCard.jsx
+│   │   ├── ProductCard.css
+│   │   ├── Cart.jsx
+│   │   ├── Cart.css
+│   │   ├── Checkout.jsx
+│   │   └── Checkout.css
+│   ├── context/
+│   │   └── CartContext.js
+│   ├── utils/
+│   │   └── api.js
+│   ├── App.js
+│   ├── App.css
+│   └── index.js
+├── package.json
+└── README.md
