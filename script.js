@@ -628,3 +628,26 @@ function initApp() {
 
 // ========== ЗАПУСК ПРИЛОЖЕНИЯ ==========
 document.addEventListener('DOMContentLoaded', initApp);
+// Срочный фикс для кнопки возрастной проверки
+function emergencyFix() {
+    const confirmBtn = document.getElementById('ageConfirm');
+    const denyBtn = document.getElementById('ageDeny');
+    
+    if (confirmBtn) {
+        confirmBtn.onclick = function() {
+            localStorage.setItem('ageVerified', 'true');
+            document.getElementById('ageModal').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            alert('Возраст подтвержден! Добро пожаловать.');
+        };
+    }
+    
+    if (denyBtn) {
+        denyBtn.onclick = function() {
+            alert('Доступ разрешен только с 18 лет.');
+        };
+    }
+}
+
+// Вызываем срочный фикс после загрузки страницы
+setTimeout(emergencyFix, 100);
