@@ -1142,3 +1142,13 @@ body {
         font-size: 13px;
     }
 }
+/* Добавь в конец style.css */
+.no-products {
+    text-align: center;
+    padding: 60px 20px;
+    grid-column: 1 / -1;
+}
+
+.no-products i {
+    font-size: 64px;
+    color: var(--
