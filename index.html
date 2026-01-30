@@ -1,34 +1,318 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Tobacco Mini App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Telegram WebApp -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smoke Premium | Telegram Shop</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚬</text></svg>">
 </head>
 <body>
-
-  <header>
-    <h1>🔥 Tobacco Shop</h1>
-    <p>Онлайн-заказ табака</p>
-  </header>
-
-  <main>
-    <div class="product">
-      <h2>Darkside — Cola</h2>
-      <p>Цена: 900 ₽</p>
-      <button onclick="addToCart()">Добавить в корзину</button>
+    <!-- Age Verification Modal -->
+    <div id="ageModal" class="modal">
+        <div class="modal-content glass">
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="text-gold">Внимание! 18+</h2>
+            <div class="verification-text">
+                <p>Это приложение предназначено исключительно для лиц, достигших 18 лет.</p>
+                <p><strong>Табак вредит вашему здоровью.</strong></p>
+                <p>Подтверждая возраст, вы соглашаетесь с условиями использования.</p>
+            </div>
+            <div class="verification-actions">
+                <button id="ageDeny" class="btn btn-secondary">Мне нет 18</button>
+                <button id="ageConfirm" class="btn btn-primary">Мне есть 18</button>
+            </div>
+            <div class="legal-notice">
+                <small>Нажимая подтвердить, вы соглашаетесь с политикой конфиденциальности.</small>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <footer>
-    <button class="pay-btn" onclick="pay()">Оплатить</button>
-  </footer>
+    <!-- Main App (hidden until age verification) -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Navbar -->
+        <nav class="navbar glass">
+            <div class="navbar-container">
+                <div class="navbar-brand">
+                    <span class="brand-icon">🚬</span>
+                    <span class="brand-name">SMOKE<span class="text-gold">PREMIUM</span></span>
+                </div>
+                <div class="navbar-actions">
+                    <button id="catalogBtn" class="nav-link active">
+                        <i class="fas fa-store"></i>
+                        <span>Каталог</span>
+                    </button>
+                    <button id="cartBtn" class="cart-button">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="cart-badge">0</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
 
-  <script src="script.js"></script>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Screen -->
+            <section id="homeScreen" class="screen active">
+                <!-- Promo Banner -->
+                <div class="promo-banner">
+                    <div class="promo-slide active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="promo-content">
+                            <h2 class="promo-title">Новая коллекция Tangiers</h2>
+                            <p class="promo-description">Эксклюзивные вкусы с доставкой за 2 часа</p>
+                            <button class="btn btn-primary to-catalog">Смотреть</button>
+                        </div>
+                        <div class="promo-image"></div>
+                    </div>
+                    <div class="promo-dots">
+                        <span class="promo-dot active"></span>
+                        <span class="promo-dot"></span>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <section class="categories-section">
+                    <h2>Категории</h2>
+                    <div class="categories-grid">
+                        <div class="category-card gold" data-category="hookah">
+                            <div class="category-icon"><i class="fas fa-smoking"></i></div>
+                            <h3 class="category-name">Кальянный табак</h3>
+                            <div class="category-arrow">→</div>
+                        </div>
+                        <div class="category-card copper" data-category="cigarettes">
+                            <div class="category-icon"><i class="fas fa-smoking"></i></div>
+                            <h3 class="category-name">Сигареты</h3>
+                            <div class="category-arrow">→</div>
+                        </div>
+                        <div class="category-card amber" data-category="sticks">
+                            <div class="category-icon"><i class="fas fa-box"></i></div>
+                            <h3 class="category-name">Стики</h3>
+                            <div class="category-arrow">→</div>
+                        </div>
+                        <div class="category-card gold" data-category="accessories">
+                            <div class="category-icon"><i class="fas fa-tools"></i></div>
+                            <h3 class="category-name">Аксессуары</h3>
+                            <div class="category-arrow">→</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features -->
+                <section class="features-section">
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-shipping-fast"></i></div>
+                            <h4>Быстрая доставка</h4>
+                            <p>От 30 минут в городе</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-user-secret"></i></div>
+                            <h4>Конфиденциально</h4>
+                            <p>Анонимная упаковка</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-crown"></i></div>
+                            <h4>Премиум качество</h4>
+                            <p>Только оригиналы</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
+                            <h4>Онлайн оплата</h4>
+                            <p>Карта/СБП/Наличные</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Catalog Screen -->
+            <section id="catalogScreen" class="screen">
+                <div class="catalog-header">
+                    <button class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1>Каталог</h1>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Поиск товаров...">
+                    </div>
+                    
+                    <div class="filters-section">
+                        <select id="brandFilter" class="filter-select">
+                            <option value="">Все бренды</option>
+                            <option value="Tangiers">Tangiers</option>
+                            <option value="Al Fakher">Al Fakher</option>
+                            <option value="Darkside">Darkside</option>
+                            <option value="MustHave">MustHave</option>
+                        </select>
+                        
+                        <select id="strengthFilter" class="filter-select">
+                            <option value="">Крепость</option>
+                            <option value="Легкая">Легкая</option>
+                            <option value="Средняя">Средняя</option>
+                            <option value="Крепкая">Крепкая</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be loaded here by JS -->
+                </div>
+            </section>
+
+            <!-- Product Screen -->
+            <section id="productScreen" class="screen">
+                <div class="product-container">
+                    <button class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    
+                    <div class="product-image-large" id="productImage"></div>
+                    
+                    <div class="product-details">
+                        <h2 id="productName">Tangiers Birquq</h2>
+                        <div class="product-meta">
+                            <span class="product-brand" id="productBrand">Tangiers</span>
+                            <span class="product-strength" id="productStrength">Средняя</span>
+                        </div>
+                        <p class="product-flavor" id="productFlavor">Яблоко + Корица</p>
+                        <p class="product-description" id="productDescription">Премиальный табак для настоящих ценителей. Мягкий дым, насыщенный вкус и стойкий аромат.</p>
+                        
+                        <div class="product-price-section">
+                            <div class="price-tag">
+                                <span class="price" id="productPrice">1200</span>
+                                <span class="currency">₽</span>
+                            </div>
+                            
+                            <div class="quantity-selector">
+                                <button class="qty-btn minus"><i class="fas fa-minus"></i></button>
+                                <span class="qty-value" id="productQty">1</span>
+                                <button class="qty-btn plus"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <button class="btn btn-secondary favorite-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="btn btn-primary add-to-cart-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                Добавить в корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cart Screen -->
+            <section id="cartScreen" class="screen">
+                <div class="cart-header">
+                    <button class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1>Корзина</h1>
+                </div>
+                
+                <div class="cart-items" id="cartItems">
+                    <!-- Cart items will be loaded here -->
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Ваша корзина пуста</p>
+                        <button class="btn btn-primary to-catalog">В каталог</button>
+                    </div>
+                </div>
+                
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Товаров:</span>
+                        <span id="totalItems">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Сумма:</span>
+                        <span class="text-gold" id="totalPrice">0 ₽</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Итого:</span>
+                        <span class="text-gold" id="grandTotal">0 ₽</span>
+                    </div>
+                    
+                    <button id="checkoutBtn" class="btn btn-primary btn-full" disabled>
+                        <i class="fas fa-lock"></i>
+                        Перейти к оплате
+                    </button>
+                </div>
+            </section>
+
+            <!-- Checkout Screen -->
+            <section id="checkoutScreen" class="screen">
+                <div class="checkout-header">
+                    <button class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1>Оформление заказа</h1>
+                </div>
+                
+                <div class="checkout-container">
+                    <div class="checkout-section">
+                        <h3><i class="fas fa-user"></i> Контактные данные</h3>
+                        <input type="text" id="userName" placeholder="Ваше имя" class="checkout-input">
+                        <input type="tel" id="userPhone" placeholder="Телефон" class="checkout-input">
+                    </div>
+                    
+                    <div class="checkout-section">
+                        <h3><i class="fas fa-map-marker-alt"></i> Адрес доставки</h3>
+                        <textarea id="deliveryAddress" placeholder="Адрес доставки" class="checkout-input" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="checkout-section">
+                        <h3><i class="fas fa-credit-card"></i> Способ оплаты</h3>
+                        <div class="payment-methods">
+                            <label class="payment-option active">
+                                <input type="radio" name="payment" value="card" checked>
+                                <i class="fas fa-credit-card"></i>
+                                <span>Карта онлайн</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="sbp">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>СБП</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="cash">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>Наличными</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="checkout-summary">
+                        <h3>Ваш заказ</h3>
+                        <div class="order-items" id="orderItems">
+                            <!-- Order items will be loaded here -->
+                        </div>
+                        <div class="order-total">
+                            <span>Итого к оплате:</span>
+                            <span class="text-gold" id="orderTotal">0 ₽</span>
+                        </div>
+                    </div>
+                    
+                    <div class="checkout-actions">
+                        <button id="confirmOrderBtn" class="btn btn-primary btn-full">
+                            <i class="fas fa-check"></i>
+                            Подтвердить заказ
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer"></div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
