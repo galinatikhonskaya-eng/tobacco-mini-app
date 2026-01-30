@@ -1151,4 +1151,15 @@ body {
 
 .no-products i {
     font-size: 64px;
-    color: var(--
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.no-products h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.no-products p {
+    color: var(--text-secondary);
+}
