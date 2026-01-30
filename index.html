@@ -314,5 +314,24 @@
     </div>
 
     <script src="script.js"></script>
+    <!-- Modal для подтверждения заказа (добавить перед </body>) -->
+<div id="orderConfirmModal" class="order-confirm-modal" style="display: none;">
+    <div class="order-confirm-content glass">
+        <div class="order-confirm-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 class="order-confirm-title">Заказ оформлен!</h2>
+        <div class="order-confirm-text">
+            <p>Номер вашего заказа: <strong id="orderNumber">#000000</strong></p>
+            <p>Ожидайте подтверждения в Telegram боте.</p>
+            <p>Менеджер свяжется с вами для уточнения деталей.</p>
+        </div>
+        <div class="verification-actions">
+            <button class="btn btn-primary" id="closeOrderConfirm">
+                Отлично!
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
