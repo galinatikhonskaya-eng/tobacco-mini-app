@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <!-- Main App (hidden until age verification) -->
+    <!-- Main App -->
     <div id="app" class="app-container" style="display: none;">
         <!-- Navbar -->
         <nav class="navbar glass">
@@ -147,6 +147,11 @@
                             <option value="Al Fakher">Al Fakher</option>
                             <option value="Darkside">Darkside</option>
                             <option value="MustHave">MustHave</option>
+                            <option value="Marlboro">Marlboro</option>
+                            <option value="Winston">Winston</option>
+                            <option value="IQOS">IQOS</option>
+                            <option value="Amy">Amy</option>
+                            <option value="Zippo">Zippo</option>
                         </select>
                         
                         <select id="strengthFilter" class="filter-select">
@@ -154,6 +159,9 @@
                             <option value="Легкая">Легкая</option>
                             <option value="Средняя">Средняя</option>
                             <option value="Крепкая">Крепкая</option>
+                            <option value="Лёгкие">Лёгкие</option>
+                            <option value="Крепкие">Крепкие</option>
+                            <option value="Средние">Средние</option>
                         </select>
                     </div>
                 </div>
@@ -198,8 +206,9 @@
                             <button class="btn btn-secondary favorite-btn">
                                 <i class="far fa-heart"></i>
                             </button>
-                            <button class="btn btn-primary add-to-cart-btn">
+                            <button class="btn btn-primary add-to-cart-btn btn-icon-animate">
                                 <i class="fas fa-shopping-cart"></i>
+                                <i class="fas fa-check"></i>
                                 Добавить в корзину
                             </button>
                         </div>
@@ -217,11 +226,14 @@
                 </div>
                 
                 <div class="cart-items" id="cartItems">
-                    <!-- Cart items will be loaded here -->
                     <div class="empty-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <p>Ваша корзина пуста</p>
-                        <button class="btn btn-primary to-catalog">В каталог</button>
+                        <i class="fas fa-shopping-cart fa-3x"></i>
+                        <h3>Корзина пуста</h3>
+                        <p>Добавьте товары из каталога</p>
+                        <button class="btn btn-primary to-catalog" style="margin-top: 20px;">
+                            <i class="fas fa-store"></i>
+                            Перейти в каталог
+                        </button>
                     </div>
                 </div>
                 
@@ -239,9 +251,10 @@
                         <span class="text-gold" id="grandTotal">0 ₽</span>
                     </div>
                     
-                    <button id="checkoutBtn" class="btn btn-primary btn-full" disabled>
+                    <button id="checkoutBtn" class="order-btn btn-icon-animate" disabled>
                         <i class="fas fa-lock"></i>
-                        Перейти к оплате
+                        <i class="fas fa-arrow-right"></i>
+                        <span>Перейти к оплате</span>
                     </button>
                 </div>
             </section>
@@ -300,9 +313,10 @@
                     </div>
                     
                     <div class="checkout-actions">
-                        <button id="confirmOrderBtn" class="btn btn-primary btn-full">
-                            <i class="fas fa-check"></i>
-                            Подтвердить заказ
+                        <button id="confirmOrderBtn" class="order-btn btn-icon-animate">
+                            <i class="fas fa-check-circle"></i>
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Оформить заказ</span>
                         </button>
                     </div>
                 </div>
@@ -313,25 +327,26 @@
         <div id="toastContainer"></div>
     </div>
 
-    <script src="script.js"></script>
-    <!-- Modal для подтверждения заказа (добавить перед </body>) -->
-<div id="orderConfirmModal" class="order-confirm-modal" style="display: none;">
-    <div class="order-confirm-content glass">
-        <div class="order-confirm-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h2 class="order-confirm-title">Заказ оформлен!</h2>
-        <div class="order-confirm-text">
-            <p>Номер вашего заказа: <strong id="orderNumber">#000000</strong></p>
-            <p>Ожидайте подтверждения в Telegram боте.</p>
-            <p>Менеджер свяжется с вами для уточнения деталей.</p>
-        </div>
-        <div class="verification-actions">
-            <button class="btn btn-primary" id="closeOrderConfirm">
-                Отлично!
-            </button>
+    <!-- Order Confirmation Modal -->
+    <div id="orderConfirmModal" class="order-confirm-modal" style="display: none;">
+        <div class="order-confirm-content glass">
+            <div class="order-confirm-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="order-confirm-title">Заказ оформлен!</h2>
+            <div class="order-confirm-text">
+                <p>Номер вашего заказа: <strong id="orderNumber">#000000</strong></p>
+                <p>Ожидайте подтверждения в Telegram боте.</p>
+                <p>Менеджер свяжется с вами для уточнения деталей.</p>
+            </div>
+            <div class="verification-actions">
+                <button class="btn btn-primary" id="closeOrderConfirm">
+                    Отлично!
+                </button>
+            </div>
         </div>
     </div>
-</div>
+
+    <script src="script.js"></script>
 </body>
 </html>
