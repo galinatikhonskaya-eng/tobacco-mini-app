@@ -2,9 +2,9 @@
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let currentProduct = null;
 
-// ========== РЕАЛЬНЫЕ ПРОДУКТЫ С ФОТО ИЗ ИНТЕРНЕТА ==========
+// ========== РЕАЛЬНЫЕ ПРОДУКТЫ С НОРМАЛЬНЫМИ ФОТО ==========
 const products = [
-    // КАЛЬЯННЫЙ ТАБАК
+    // КАЛЬЯННЫЙ ТАБАК (фото чая, кофе, специй)
     {
         id: 1,
         name: 'Tangiers Birquq',
@@ -12,10 +12,10 @@ const products = [
         flavor: 'Яблоко + Корица',
         strength: 'Средняя',
         price: 1200,
-        description: 'Премиальный табак с насыщенным вкусом яблока и мягкими нотами корицы. Идеален для длительных сессий.',
+        description: 'Премиальный табак с насыщенным вкусом яблока и мягкими нотами корицы.',
         category: 'hookah',
-        image: 'https://images.unsplash.com/photo-1595245376860-1e388a0c9879?w=800&auto=format&fit=crop&q=80',
-        badge: 'Хит продаж'
+        image: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=800&auto=format&fit=crop&q=80',
+        badge: 'Хит'
     },
     {
         id: 2,
@@ -24,9 +24,9 @@ const products = [
         flavor: 'Мята',
         strength: 'Легкая',
         price: 850,
-        description: 'Освежающий мятный вкус с чистым дымом. Классика для ценителей.',
+        description: 'Освежающий мятный вкус с чистым дымом.',
         category: 'hookah',
-        image: 'https://images.unsplash.com/photo-1517659649778-bae24b8c2e0a?w=800&auto=format&fit=crop&q=80'
+        image: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&auto=format&fit=crop&q=80'
     },
     {
         id: 3,
@@ -35,9 +35,9 @@ const products = [
         flavor: 'Цитрусовый микс',
         strength: 'Крепкая',
         price: 1500,
-        description: 'Мощная крепость с ярким цитрусовым букетом. Для опытных курильщиков.',
+        description: 'Мощная крепость с ярким цитрусовым букетом.',
         category: 'hookah',
-        image: 'https://images.unsplash.com/photo-1589301772541-d7ce0d154bbc?w=800&auto=format&fit=crop&q=80',
+        image: 'https://images.unsplash.com/photo-1566631222402-26b8b5d0beb5?w=800&auto=format&fit=crop&q=80',
         badge: 'Новинка'
     },
     {
@@ -49,7 +49,7 @@ const products = [
         price: 1300,
         description: 'Экзотическая смесь манго, маракуйи и ананаса.',
         category: 'hookah',
-        image: 'https://images.unsplash.com/photo-1572635149518-d8b9c3575e0f?w=800&auto=format&fit=crop&q=80'
+        image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&auto=format&fit=crop&q=80'
     },
     {
         id: 5,
@@ -58,12 +58,12 @@ const products = [
         flavor: 'Лимонный торт',
         strength: 'Легкая',
         price: 950,
-        description: 'Нежный вкус лимонного торта с воздушным дымом.',
+        description: 'Нежный вкус лимонного торта.',
         category: 'hookah',
-        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80'
+        image: 'https://images.unsplash.com/photo-1566631222402-26b8b5d0beb5?w=800&auto=format&fit=crop&q=80'
     },
     
-    // СИГАРЕТЫ
+    // СИГАРЕТЫ (нейтральные фото)
     {
         id: 6,
         name: 'Marlboro Red',
@@ -71,9 +71,9 @@ const products = [
         flavor: 'Классический',
         strength: 'Крепкие',
         price: 220,
-        description: 'Классические крепкие сигареты. Легендарный вкус.',
+        description: 'Классические крепкие сигареты.',
         category: 'cigarettes',
-        image: 'https://images.unsplash.com/photo-1558979158-65a1eaa08691?w=800&auto=format&fit=crop&q=80',
+        image: 'https://images.unsplash.com/photo-1561708647-9decb66dce92?w=800&auto=format&fit=crop&q=80',
         badge: 'Популярные'
     },
     {
@@ -85,101 +85,57 @@ const products = [
         price: 200,
         description: 'Лёгкие сигареты с мягким вкусом.',
         category: 'cigarettes',
-        image: 'https://images.unsplash.com/photo-1545361367-3202270671e7?w=800&auto=format&fit=crop&q=80'
-    },
-    {
-        id: 8,
-        name: 'Parliament Night Blue',
-        brand: 'Parliament',
-        flavor: 'Ментол',
-        strength: 'Средние',
-        price: 240,
-        description: 'Ментоловые сигареты с угольным фильтром.',
-        category: 'cigarettes',
-        image: 'https://images.unsplash.com/photo-1603398938378-e54eab446dde?w=800&auto=format&fit=crop&q=80'
+        image: 'https://images.unsplash.com/photo-1561708647-9decb66dce92?w=800&auto=format&fit=crop&q=80'
     },
     
-    // СТИКИ
+    // СТИКИ (нейтральные фото упаковок)
     {
-        id: 9,
+        id: 8,
         name: 'IQOS Terea Amber',
         brand: 'IQOS',
         flavor: 'Ореховый',
         strength: 'Средние',
         price: 380,
-        description: 'Стики для систем нагревания табака с ореховым вкусом.',
+        description: 'Стики для систем нагревания табака.',
         category: 'sticks',
-        image: 'https://images.unsplash.com/photo-1589301772541-d7ce0d154bbc?w=800&auto=format&fit=crop&q=60',
+        image: 'https://images.unsplash.com/photo-1576568684255-6c3d5c6b68ee?w=800&auto=format&fit=crop&q=80',
         badge: 'Для IQOS'
     },
-    {
-        id: 10,
-        name: 'Glo Pro Bright Tobacco',
-        brand: 'Glo',
-        flavor: 'Насыщенный табак',
-        strength: 'Крепкие',
-        price: 350,
-        description: 'Стики для Glo с насыщенным табачным вкусом.',
-        category: 'sticks',
-        image: 'https://images.unsplash.com/photo-1545361367-3202270671e7?w=800&auto=format&fit=crop&q=60'
-    },
     
-    // АКСЕССУАРЫ
+    // АКСЕССУАРЫ (фото самих аксессуаров)
     {
-        id: 11,
+        id: 9,
         name: 'Кальян Amy Deluxe',
         brand: 'Amy',
         flavor: '—',
         strength: '—',
         price: 4500,
-        description: 'Премиальный кальян из нержавеющей стали. Высота 65 см.',
+        description: 'Премиальный кальян из нержавеющей стали.',
         category: 'accessories',
-        image: 'https://images.unsplash.com/photo-1597066494923-572a1d5ee805?w=800&auto=format&fit=crop&q=80',
-        badge: 'Топ'
+        image: 'https://images.unsplash.com/photo-1572635149518-d8b9c3575e0f?w=800&auto=format&fit=crop&q=80',
+        badge: 'Премиум'
     },
     {
-        id: 12,
+        id: 10,
         name: 'Уголь кокосовый',
         brand: 'CocoBrico',
         flavor: '—',
         strength: '—',
         price: 300,
-        description: 'Кокосовый уголь для кальяна, 96 кубиков.',
+        description: 'Кокосовый уголь для кальяна.',
         category: 'accessories',
-        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80'
+        image: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&auto=format&fit=crop&q=80'
     },
     {
-        id: 13,
-        name: 'Зажигалка турбо',
+        id: 11,
+        name: 'Зажигалка турbo',
         brand: 'Zippo',
         flavor: '—',
         strength: '—',
         price: 1200,
-        description: 'Турбозажигалка с ветрозащитой. Черный матовый корпус.',
+        description: 'Турбозажигалка с ветрозащитой.',
         category: 'accessories',
-        image: 'https://images.unsplash.com/photo-1603398938378-e54eab446dde?w=800&auto=format&fit=crop&q=80'
-    },
-    {
-        id: 14,
-        name: 'Портсигар металлический',
-        brand: 'MetalCase',
-        flavor: '—',
-        strength: '—',
-        price: 800,
-        description: 'Стильный металлический портсигар на 20 сигарет.',
-        category: 'accessories',
-        image: 'https://images.unsplash.com/photo-1572635149518-d8b9c3575e0f?w=800&auto=format&fit=crop&q=80'
-    },
-    {
-        id: 15,
-        name: 'Набор для чистки',
-        brand: 'CleanMaster',
-        flavor: '—',
-        strength: '—',
-        price: 600,
-        description: 'Профессиональный набор для чистки кальяна.',
-        category: 'accessories',
-        image: 'https://images.unsplash.com/photo-1595245376860-1e388a0c9879?w=800&auto=format&fit=crop&q=80'
+        image: 'https://images.unsplash.com/photo-1576568684255-6c3d5c6b68ee?w=800&auto=format&fit=crop&q=80'
     }
 ];
 
@@ -379,6 +335,7 @@ function renderProducts(filterCategory = '') {
             addToCart(product.id, 1);
             quickAddBtn.classList.add('adding-to-cart');
             setTimeout(() => quickAddBtn.classList.remove('adding-to-cart'), 300);
+            showToast(`${product.name} добавлен в корзину!`, 'success');
         });
         
         const buyBtn = productCard.querySelector('.buy-btn');
@@ -566,40 +523,31 @@ function renderCart() {
 
 // ========== ОФОРМЛЕНИЕ ЗАКАЗА ==========
 function showOrderConfirmation(orderId) {
-    const modal = document.createElement('div');
-    modal.className = 'order-confirm-modal active';
-    modal.innerHTML = `
-        <div class="order-confirm-content glass">
-            <div class="order-confirm-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2 class="order-confirm-title">Заказ оформлен!</h2>
-            <div class="order-confirm-text">
-                <p>Номер вашего заказа: <strong>#${orderId}</strong></p>
-                <p>Ожидайте подтверждения в Telegram боте.</p>
-                <p>Менеджер свяжется с вами для уточнения деталей.</p>
-            </div>
-            <div class="verification-actions">
-                <button class="btn btn-primary" id="closeOrderConfirm">
-                    Отлично!
-                </button>
-            </div>
-        </div>
-    `;
+    const modal = document.getElementById('orderConfirmModal');
+    const orderNumber = document.getElementById('orderNumber');
     
-    document.body.appendChild(modal);
-    
-    document.getElementById('closeOrderConfirm').addEventListener('click', () => {
-        modal.remove();
-        showScreen('homeScreen');
-    });
-    
-    setTimeout(() => {
-        if (modal.parentNode) {
-            modal.remove();
-            showScreen('homeScreen');
+    if (orderNumber) orderNumber.textContent = `#${orderId}`;
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        
+        const closeBtn = document.getElementById('closeOrderConfirm');
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+                showScreen('homeScreen');
+            };
         }
-    }, 5000);
+        
+        setTimeout(() => {
+            if (modal.style.display !== 'none') {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+                showScreen('homeScreen');
+            }
+        }, 5000);
+    }
 }
 
 function processOrder() {
@@ -653,7 +601,6 @@ function processOrder() {
     deliveryAddress.value = '';
     
     showOrderConfirmation(orderId);
-    
     simulateTelegramNotification(order);
 }
 
@@ -661,7 +608,26 @@ function simulateTelegramNotification(order) {
     console.log('Telegram notification sent:', order);
 }
 
-// ========== ИНИЦИАЛИЗАЦИЯ ==========
+// ========== АНИМАЦИИ КНОПОК ==========
+function addButtonPressEffect() {
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.buy-btn, .order-btn, #checkoutBtn, #confirmOrderBtn, .qty-btn, .remove-item');
+        if (btn && !btn.disabled) {
+            btn.classList.add('btn-pressed');
+            setTimeout(() => btn.classList.remove('btn-pressed'), 150);
+        }
+    });
+    
+    setInterval(() => {
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn && !checkoutBtn.disabled && cart.length > 0) {
+            checkoutBtn.classList.add('pulse-animation');
+            setTimeout(() => checkoutBtn.classList.remove('pulse-animation'), 500);
+        }
+    }, 3000);
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ==========
 function initApp() {
     initAgeVerification();
     
@@ -724,6 +690,7 @@ function initApp() {
             
             const quantity = parseInt(document.getElementById('productQty').textContent);
             addToCart(currentProduct.id, quantity);
+            showToast(`${currentProduct.name} добавлен в корзину!`, 'success');
             
             setTimeout(() => {
                 showScreen('cartScreen');
@@ -743,6 +710,15 @@ function initApp() {
     if (confirmOrderBtn) {
         confirmOrderBtn.addEventListener('click', processOrder);
     }
+    
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            paymentOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            option.querySelector('input').checked = true;
+        });
+    });
     
     let currentPromo = 0;
     const promoSlides = document.querySelectorAll('.promo-slide');
@@ -773,6 +749,7 @@ function initApp() {
     }
     
     updateCartCount();
+    addButtonPressEffect();
 }
 
 // ========== ЗАПУСК ПРИЛОЖЕНИЯ ==========
