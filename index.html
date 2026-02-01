@@ -9,14 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚬</text></svg>">
     <style>
-        /* Фиксируем экран для предотвращения дергания */
-        html, body {
-            overflow-x: hidden;
-            overscroll-behavior: none;
-            -webkit-overflow-scrolling: touch;
-            height: 100%;
+        /* Стили для фиксации контента */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            width: 100vw;
         }
         
         .app-container {
@@ -25,27 +32,157 @@
             left: 0;
             right: 0;
             bottom: 0;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
         }
         
-        .main-content {
-            position: absolute;
-            top: 60px; /* Высота навбара */
-            left: 0;
-            right: 0;
-            bottom: 0;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 15px;
+        .navbar {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            padding: 0 20px;
+            height: 60px;
+            flex-shrink: 0;
+            z-index: 1000;
         }
         
-        /* Обновленный компактный поиск */
-        .catalog-header {
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .navbar-brand {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+        }
+        
+        .brand-icon {
+            font-size: 24px;
+        }
+        
+        .brand-name {
+            color: #fff;
+        }
+        
+        .text-gold {
+            color: #FFD700;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cart-button {
+            background: transparent;
+            border: none;
+            color: #FFD700;
+            font-size: 20px;
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-button:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            font-size: 12px;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Основной контент с фиксированной прокруткой */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            padding: 0;
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .screen.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        /* Фикс для предотвращения наложения на навбар */
+        .screen > *:first-child {
+            margin-top: 0;
+        }
+        
+        /* Улучшенный компактный поиск */
+        .catalog-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-top: 10px;
+        }
+        
+        .back-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
         }
         
         .compact-search {
@@ -53,59 +190,52 @@
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 215, 0, 0.4);
-            border-radius: 25px;
-            padding: 8px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 15px;
             transition: all 0.3s ease;
         }
         
         .compact-search:focus-within {
             border-color: #FFD700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
         }
         
         .compact-search i {
-            color: #FFD700;
+            color: rgba(255, 255, 255, 0.6);
             margin-right: 10px;
             font-size: 16px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
         }
         
         .compact-search input {
             background: transparent;
             border: none;
             color: white;
-            font-size: 14px;
+            font-size: 15px;
             width: 100%;
             outline: none;
-            padding: 0;
+            font-family: 'Inter', sans-serif;
         }
         
         .compact-search input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.4);
         }
         
-        /* Золотой неоновый стиль для всех иконок */
-        .text-gold {
-            color: #FFD700 !important;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
-        }
-        
-        /* Обновленные стили для карточек товаров */
+        /* Обновленные карточки товаров */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            margin-top: 0;
+            padding-bottom: 20px;
         }
         
         .product-card {
-            background: rgba(20, 20, 20, 0.7) !important;
+            background: rgba(30, 30, 30, 0.6);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
+            border-radius: 16px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
             min-height: 380px;
             display: flex;
@@ -113,65 +243,70 @@
         }
         
         .product-card:hover {
-            transform: translateY(-5px);
-            border-color: #FFD700;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 215, 0, 0.2);
         }
         
-        /* Картинка товара */
         .product-image {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
-            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 48px;
         }
         
-        /* Прозрачная область с текстом */
         .product-info {
-            padding: 15px;
+            padding: 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
+            background: rgba(20, 20, 20, 0.8);
         }
         
         .product-name {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #fff;
-            line-height: 1.3;
+            color: #ffffff;
+            line-height: 1.4;
+            font-family: 'Manrope', sans-serif;
         }
         
         .product-flavor {
             color: #FFD700;
-            font-size: 13px;
-            margin-bottom: 10px;
-            font-style: italic;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            opacity: 0.9;
         }
         
         .product-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            font-size: 11px;
+            margin-bottom: 15px;
+            font-size: 12px;
         }
         
         .product-brand {
             background: rgba(255, 215, 0, 0.1);
             color: #FFD700;
-            padding: 4px 10px;
-            border-radius: 15px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 0.3px;
         }
         
         .product-strength {
-            background: rgba(255, 215, 0, 0.1);
-            color: #FFD700;
-            padding: 4px 10px;
-            border-radius: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
             font-weight: 500;
         }
         
@@ -180,91 +315,196 @@
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .product-price {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             color: #FFD700;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+            font-family: 'Manrope', sans-serif;
+            letter-spacing: -0.5px;
         }
         
-        /* Иконка корзины с золотым неоном */
-        .cart-icon {
-            color: #FFD700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            transition: all 0.3s ease;
-        }
-        
-        .cart-button {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .cart-button:hover .cart-icon {
-            text-shadow: 0 0 15px rgba(255, 215, 0, 1);
-        }
-        
-        /* Кнопка добавления в корзину */
         .add-to-cart-btn {
-            background: rgba(255, 215, 0, 0.15);
-            border: 1px solid rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
             border-radius: 50%;
-            color: #FFD700;
-            width: 40px;
-            height: 40px;
+            color: #000;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
-            position: relative;
-            overflow: hidden;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
         }
         
         .add-to-cart-btn:hover {
-            background: rgba(255, 215, 0, 0.25);
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
         }
         
         .add-to-cart-btn:active {
             transform: scale(0.95);
         }
         
-        .add-to-cart-btn i {
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-        }
-        
-        /* Бейдж "Хит" в золотом стиле */
+        /* Бейдж "Хит" */
         .product-badge {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            background: linear-gradient(135deg, #FFD700 0%, #ffcc33 100%);
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: #000;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
             z-index: 2;
         }
         
-        /* Иконки в навбаре */
-        .nav-link i, .cart-button i {
-            color: #FFD700;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        /* Главный экран */
+        #homeScreen {
+            padding-top: 10px;
         }
         
-        /* Убираем фильтры */
-        .filters-section {
-            display: none !important;
+        .promo-banner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .promo-content {
+            padding: 25px;
+        }
+        
+        .promo-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        .promo-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .categories-section {
+            margin-bottom: 30px;
+        }
+        
+        .categories-section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .category-card {
+            background: rgba(30, 30, 30, 0.6);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-card:hover {
+            border-color: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .category-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+        
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+        
+        .category-arrow {
+            color: #FFD700;
+            font-size: 20px;
+        }
+        
+        .features-section {
+            margin-top: 30px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .feature-card {
+            background: rgba(30, 30, 30, 0.6);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
         }
         
         /* Адаптивность */
@@ -274,8 +514,14 @@
                 gap: 15px;
             }
             
-            .product-card {
-                min-height: 360px;
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
         }
         
@@ -284,22 +530,53 @@
                 grid-template-columns: 1fr;
             }
             
-            .product-card {
-                min-height: 340px;
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .screen {
+                padding: 15px;
             }
             
             .catalog-header {
-                gap: 8px;
+                gap: 12px;
             }
             
             .compact-search {
-                padding: 6px 12px;
+                padding: 8px 12px;
             }
         }
         
         /* Плавная прокрутка */
-        .screen {
-            transition: transform 0.3s ease;
+        .main-content {
+            scroll-behavior: smooth;
+        }
+        
+        /* Фикс для стрелки назад - не даем залезать под навбар */
+        .catalog-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            padding: 15px 0;
+            margin-top: -20px;
+            padding-top: 20px;
+            z-index: 100;
+        }
+        
+        /* Загрузка изображений из бота */
+        .product-image.loading {
+            background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
     </style>
 </head>
@@ -328,7 +605,7 @@
 
     <!-- Main App -->
     <div id="app" class="app-container" style="display: none;">
-        <!-- Navbar -->
+        <!-- Навбар: Только бренд и корзина -->
         <nav class="navbar glass">
             <div class="navbar-container">
                 <div class="navbar-brand">
@@ -336,98 +613,89 @@
                     <span class="brand-name">SMOKE<span class="text-gold">PREMIUM</span></span>
                 </div>
                 <div class="navbar-actions">
-                    <button id="catalogBtn" class="nav-link active">
-                        <i class="fas fa-store"></i>
-                        <span>Каталог</span>
-                    </button>
                     <button id="cartBtn" class="cart-button">
-                        <i class="fas fa-shopping-cart cart-icon"></i>
+                        <i class="fas fa-shopping-cart"></i>
                         <span id="cartCount" class="cart-badge">0</span>
                     </button>
                 </div>
             </div>
         </nav>
 
-        <!-- Main Content -->
+        <!-- Основной контент -->
         <main class="main-content">
-            <!-- Home Screen -->
+            <!-- Главный экран -->
             <section id="homeScreen" class="screen active">
-                <!-- Promo Banner -->
+                <!-- Промо-баннер -->
                 <div class="promo-banner">
-                    <div class="promo-slide active" style="background: linear-gradient(135deg, #222 0%, #333 100%);">
+                    <div class="promo-slide active">
                         <div class="promo-content">
-                            <h2 class="promo-title text-gold">Новая коллекция Tangiers</h2>
+                            <h2 class="promo-title">Новая коллекция Tangiers</h2>
                             <p class="promo-description">Эксклюзивные вкусы с доставкой за 2 часа</p>
                             <button class="btn btn-primary to-catalog">Смотреть</button>
                         </div>
-                        <div class="promo-image"></div>
-                    </div>
-                    <div class="promo-dots">
-                        <span class="promo-dot active"></span>
-                        <span class="promo-dot"></span>
                     </div>
                 </div>
 
-                <!-- Categories -->
+                <!-- Категории -->
                 <section class="categories-section">
-                    <h2 class="text-gold">Категории</h2>
+                    <h2>Категории</h2>
                     <div class="categories-grid">
-                        <div class="category-card gold" data-category="hookah">
-                            <div class="category-icon"><i class="fas fa-smoking text-gold"></i></div>
+                        <div class="category-card" data-category="hookah">
+                            <div class="category-icon"><i class="fas fa-smoking"></i></div>
                             <h3 class="category-name">Кальянный табак</h3>
                             <div class="category-arrow">→</div>
                         </div>
-                        <div class="category-card copper" data-category="cigarettes">
-                            <div class="category-icon"><i class="fas fa-smoking text-gold"></i></div>
+                        <div class="category-card" data-category="cigarettes">
+                            <div class="category-icon"><i class="fas fa-smoking"></i></div>
                             <h3 class="category-name">Сигареты</h3>
                             <div class="category-arrow">→</div>
                         </div>
-                        <div class="category-card amber" data-category="sticks">
-                            <div class="category-icon"><i class="fas fa-box text-gold"></i></div>
+                        <div class="category-card" data-category="sticks">
+                            <div class="category-icon"><i class="fas fa-box"></i></div>
                             <h3 class="category-name">Стики</h3>
                             <div class="category-arrow">→</div>
                         </div>
-                        <div class="category-card gold" data-category="accessories">
-                            <div class="category-icon"><i class="fas fa-tools text-gold"></i></div>
+                        <div class="category-card" data-category="accessories">
+                            <div class="category-icon"><i class="fas fa-tools"></i></div>
                             <h3 class="category-name">Аксессуары</h3>
                             <div class="category-arrow">→</div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Features -->
+                <!-- Особенности -->
                 <section class="features-section">
                     <div class="features-grid">
                         <div class="feature-card">
-                            <div class="feature-icon"><i class="fas fa-shipping-fast text-gold"></i></div>
-                            <h4 class="text-gold">Быстрая доставка</h4>
+                            <div class="feature-icon"><i class="fas fa-shipping-fast"></i></div>
+                            <h4>Быстрая доставка</h4>
                             <p>От 30 минут в городе</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon"><i class="fas fa-user-secret text-gold"></i></div>
-                            <h4 class="text-gold">Конфиденциально</h4>
+                            <div class="feature-icon"><i class="fas fa-user-secret"></i></div>
+                            <h4>Конфиденциально</h4>
                             <p>Анонимная упаковка</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon"><i class="fas fa-crown text-gold"></i></div>
-                            <h4 class="text-gold">Премиум качество</h4>
+                            <div class="feature-icon"><i class="fas fa-crown"></i></div>
+                            <h4>Премиум качество</h4>
                             <p>Только оригиналы</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon"><i class="fas fa-credit-card text-gold"></i></div>
-                            <h4 class="text-gold">Онлайн оплата</h4>
+                            <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
+                            <h4>Онлайн оплата</h4>
                             <p>Карта/СБП/Наличные</p>
                         </div>
                     </div>
                 </section>
             </section>
 
-            <!-- Catalog Screen -->
+            <!-- Экран каталога -->
             <section id="catalogScreen" class="screen">
-                <!-- Компактный поиск на одном уровне со стрелкой назад -->
+                <!-- Заголовок с поиском -->
                 <div class="catalog-header">
                     <button class="back-btn">
-                        <i class="fas fa-arrow-left text-gold"></i>
+                        <i class="fas fa-arrow-left"></i>
                     </button>
                     <div class="compact-search">
                         <i class="fas fa-search"></i>
@@ -435,44 +703,31 @@
                     </div>
                 </div>
 
-                <!-- Карточки товаров -->
+                <!-- Сетка товаров -->
                 <div class="products-grid" id="productsGrid">
                     <!-- Товары будут загружаться динамически -->
-                    <!-- Пример карточки товара -->
-                    <div class="product-card">
-                        <div class="product-badge">Хит</div>
-                        <img src="" alt="Tangiers Birquq" class="product-image" data-src="https://via.placeholder.com/300x180/333/FFD700?text=Tangiers">
-                        <div class="product-info">
-                            <h3 class="product-name">Tangiers Birquq</h3>
-                            <p class="product-flavor">Яблоко + Корица</p>
-                            <div class="product-meta">
-                                <span class="product-brand">Tangiers</span>
-                                <span class="product-strength">Средняя</span>
-                            </div>
-                            <div class="product-footer">
-                                <div class="product-price">1200 ₽</div>
-                                <button class="add-to-cart-btn" data-product-id="1">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
-            <!-- Product Screen -->
+            <!-- Экран товара -->
             <section id="productScreen" class="screen">
-                <div class="product-container">
-                    <div class="product-header">
-                        <button class="back-btn">
-                            <i class="fas fa-arrow-left text-gold"></i>
-                        </button>
+                <div class="catalog-header">
+                    <button class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="compact-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Поиск..." disabled>
+                    </div>
+                </div>
+                
+                <div class="product-container" style="margin-top: 20px;">
+                    <div class="product-image-large" id="productImage">
+                        <div class="product-image loading"></div>
                     </div>
                     
-                    <img src="" alt="Product" class="product-image-large" id="productImage" data-src="">
-                    
                     <div class="product-details">
-                        <h2 id="productName" class="text-gold">Tangiers Birquq</h2>
+                        <h2 id="productName">Tangiers Birquq</h2>
                         <div class="product-meta">
                             <span class="product-brand" id="productBrand">Tangiers</span>
                             <span class="product-strength" id="productStrength">Средняя</span>
@@ -480,252 +735,146 @@
                         <p class="product-flavor" id="productFlavor">Яблоко + Корица</p>
                         <p class="product-description" id="productDescription">Премиальный табак для настоящих ценителей. Мягкий дым, насыщенный вкус и стойкий аромат.</p>
                         
-                        <div class="product-price-section">
-                            <div class="price-tag">
-                                <span class="price text-gold" id="productPrice">1200</span>
-                                <span class="currency text-gold">₽</span>
+                        <div class="product-footer" style="margin-top: 30px;">
+                            <div class="product-price">
+                                <span id="productPrice">1200</span> ₽
                             </div>
                             
-                            <div class="quantity-selector">
-                                <button class="qty-btn minus"><i class="fas fa-minus text-gold"></i></button>
-                                <span class="qty-value" id="productQty">1</span>
-                                <button class="qty-btn plus"><i class="fas fa-plus text-gold"></i></button>
+                            <div class="quantity-selector" style="display: flex; align-items: center; gap: 15px;">
+                                <button class="back-btn minus" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="qty-value" id="productQty" style="font-size: 18px; font-weight: 600;">1</span>
+                                <button class="back-btn plus" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
                         </div>
                         
-                        <div class="product-actions">
-                            <button class="btn btn-secondary favorite-btn">
-                                <i class="far fa-heart text-gold"></i>
-                            </button>
-                            <button class="btn btn-primary add-to-cart-btn-full btn-icon-animate">
-                                <i class="fas fa-shopping-cart"></i>
-                                <i class="fas fa-check"></i>
-                                Добавить в корзину
-                            </button>
-                        </div>
+                        <button class="btn btn-primary add-to-cart-btn-full" style="width: 100%; margin-top: 25px; padding: 16px; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <i class="fas fa-shopping-cart"></i>
+                            Добавить в корзину
+                        </button>
                     </div>
                 </div>
             </section>
 
-            <!-- Cart Screen -->
+            <!-- Экран корзины -->
             <section id="cartScreen" class="screen">
-                <div class="cart-header">
+                <div class="catalog-header">
                     <button class="back-btn">
-                        <i class="fas fa-arrow-left text-gold"></i>
+                        <i class="fas fa-arrow-left"></i>
                     </button>
-                    <h1 class="text-gold">Корзина</h1>
+                    <div class="compact-search">
+                        <i class="fas fa-shopping-cart"></i>
+                        <input type="text" placeholder="Корзина" disabled>
+                    </div>
                 </div>
                 
-                <div class="cart-items" id="cartItems">
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-cart fa-3x text-gold"></i>
-                        <h3 class="text-gold">Корзина пуста</h3>
-                        <p>Добавьте товары из каталога</p>
-                        <button class="btn btn-primary to-catalog" style="margin-top: 20px;">
-                            <i class="fas fa-store text-gold"></i>
+                <div class="cart-items" id="cartItems" style="margin-top: 20px;">
+                    <div class="empty-cart" style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-shopping-cart fa-3x" style="color: rgba(255, 255, 255, 0.1); margin-bottom: 20px;"></i>
+                        <h3 style="color: #FFD700; margin-bottom: 10px;">Корзина пуста</h3>
+                        <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 30px;">Добавьте товары из каталога</p>
+                        <button class="btn btn-primary to-catalog" style="padding: 14px 28px;">
+                            <i class="fas fa-store"></i>
                             Перейти в каталог
                         </button>
                     </div>
                 </div>
                 
-                <div class="cart-summary">
-                    <div class="summary-row">
+                <div class="cart-summary" style="margin-top: 30px; padding: 20px; background: rgba(30, 30, 30, 0.6); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                    <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 16px;">
                         <span>Товаров:</span>
                         <span id="totalItems">0</span>
                     </div>
-                    <div class="summary-row">
+                    <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 16px;">
                         <span>Сумма:</span>
-                        <span class="text-gold" id="totalPrice">0 ₽</span>
+                        <span style="color: #FFD700;" id="totalPrice">0 ₽</span>
                     </div>
-                    <div class="summary-row total">
+                    <div class="summary-row total" style="display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 20px; font-weight: 700; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
                         <span>Итого:</span>
-                        <span class="text-gold" id="grandTotal">0 ₽</span>
+                        <span style="color: #FFD700;" id="grandTotal">0 ₽</span>
                     </div>
                     
-                    <button id="checkoutBtn" class="order-btn btn-icon-animate" disabled>
-                        <i class="fas fa-lock text-gold"></i>
-                        <i class="fas fa-arrow-right text-gold"></i>
-                        <span>Перейти к оплате</span>
+                    <button id="checkoutBtn" class="btn btn-primary" disabled style="width: 100%; padding: 18px; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <i class="fas fa-lock"></i>
+                        Перейти к оплате
                     </button>
-                </div>
-            </section>
-
-            <!-- Checkout Screen -->
-            <section id="checkoutScreen" class="screen">
-                <div class="checkout-header">
-                    <button class="back-btn">
-                        <i class="fas fa-arrow-left text-gold"></i>
-                    </button>
-                    <h1 class="text-gold">Оформление заказа</h1>
-                </div>
-                
-                <div class="checkout-container">
-                    <div class="checkout-section">
-                        <h3 class="text-gold"><i class="fas fa-user text-gold"></i> Контактные данные</h3>
-                        <input type="text" id="userName" placeholder="Ваше имя" class="checkout-input">
-                        <input type="tel" id="userPhone" placeholder="Телефон" class="checkout-input">
-                    </div>
-                    
-                    <div class="checkout-section">
-                        <h3 class="text-gold"><i class="fas fa-map-marker-alt text-gold"></i> Адрес доставки</h3>
-                        <textarea id="deliveryAddress" placeholder="Адрес доставки" class="checkout-input" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="checkout-section">
-                        <h3 class="text-gold"><i class="fas fa-credit-card text-gold"></i> Способ оплаты</h3>
-                        <div class="payment-methods">
-                            <label class="payment-option active">
-                                <input type="radio" name="payment" value="card" checked>
-                                <i class="fas fa-credit-card text-gold"></i>
-                                <span>Карта онлайн</span>
-                            </label>
-                            <label class="payment-option">
-                                <input type="radio" name="payment" value="sbp">
-                                <i class="fas fa-mobile-alt text-gold"></i>
-                                <span>СБП</span>
-                            </label>
-                            <label class="payment-option">
-                                <input type="radio" name="payment" value="cash">
-                                <i class="fas fa-money-bill-wave text-gold"></i>
-                                <span>Наличными</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="checkout-summary">
-                        <h3 class="text-gold">Ваш заказ</h3>
-                        <div class="order-items" id="orderItems">
-                            <!-- Order items will be loaded here -->
-                        </div>
-                        <div class="order-total">
-                            <span>Итого к оплате:</span>
-                            <span class="text-gold" id="orderTotal">0 ₽</span>
-                        </div>
-                    </div>
-                    
-                    <div class="checkout-actions">
-                        <button id="confirmOrderBtn" class="order-btn btn-icon-animate">
-                            <i class="fas fa-check-circle text-gold"></i>
-                            <i class="fas fa-paper-plane text-gold"></i>
-                            <span>Оформить заказ</span>
-                        </button>
-                    </div>
                 </div>
             </section>
         </main>
-
-        <!-- Toast Notifications -->
-        <div id="toastContainer"></div>
     </div>
 
-    <!-- Order Confirmation Modal -->
-    <div id="orderConfirmModal" class="order-confirm-modal" style="display: none;">
-        <div class="order-confirm-content glass">
-            <div class="order-confirm-icon">
-                <i class="fas fa-check-circle text-gold"></i>
-            </div>
-            <h2 class="order-confirm-title text-gold">Заказ оформлен!</h2>
-            <div class="order-confirm-text">
-                <p>Номер вашего заказа: <strong id="orderNumber" class="text-gold">#000000</strong></p>
-                <p>Ожидайте подтверждения в Telegram боте.</p>
-                <p>Менеджер свяжется с вами для уточнения деталей.</p>
-            </div>
-            <div class="verification-actions">
-                <button class="btn btn-primary" id="closeOrderConfirm">
-                    Отлично!
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
     <script>
-        // Дополнительный JavaScript для загрузки изображений из бота
+        // Базовый JavaScript для навигации
         document.addEventListener('DOMContentLoaded', function() {
-            // Функция для ленивой загрузки изображений
-            function lazyLoadImages() {
-                const images = document.querySelectorAll('img[data-src]');
-                
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            img.src = img.getAttribute('data-src');
-                            img.removeAttribute('data-src');
-                            observer.unobserve(img);
-                        }
-                    });
-                }, {
-                    rootMargin: '50px 0px',
-                    threshold: 0.1
+            // Элементы экранов
+            const screens = {
+                home: document.getElementById('homeScreen'),
+                catalog: document.getElementById('catalogScreen'),
+                product: document.getElementById('productScreen'),
+                cart: document.getElementById('cartScreen')
+            };
+            
+            // Кнопки навигации
+            const catalogBtn = document.querySelector('.to-catalog');
+            const cartBtn = document.getElementById('cartBtn');
+            const backBtns = document.querySelectorAll('.back-btn');
+            
+            // Показываем экран
+            function showScreen(screenName) {
+                // Скрываем все экраны
+                Object.values(screens).forEach(screen => {
+                    screen.classList.remove('active');
                 });
                 
-                images.forEach(img => observer.observe(img));
-            }
-            
-            // Поиск товаров
-            const searchInput = document.getElementById('searchInput');
-            const productsGrid = document.getElementById('productsGrid');
-            
-            function searchProducts() {
-                const searchTerm = searchInput.value.toLowerCase().trim();
-                const productCards = productsGrid.querySelectorAll('.product-card');
-                
-                if (searchTerm === '') {
-                    productCards.forEach(card => {
-                        card.style.display = 'block';
-                    });
-                    return;
+                // Показываем выбранный экран
+                if (screens[screenName]) {
+                    screens[screenName].classList.add('active');
                 }
                 
-                productCards.forEach(card => {
-                    const productName = card.querySelector('.product-name').textContent.toLowerCase();
-                    const productFlavor = card.querySelector('.product-flavor').textContent.toLowerCase();
-                    const productBrand = card.querySelector('.product-brand').textContent.toLowerCase();
-                    
-                    if (productName.includes(searchTerm) || 
-                        productFlavor.includes(searchTerm) || 
-                        productBrand.includes(searchTerm)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
+                // Прокручиваем вверх
+                document.querySelector('.main-content').scrollTop = 0;
+            }
+            
+            // Навигация
+            if (catalogBtn) {
+                catalogBtn.addEventListener('click', () => showScreen('catalog'));
+            }
+            
+            if (cartBtn) {
+                cartBtn.addEventListener('click', () => showScreen('cart'));
+            }
+            
+            // Кнопки "Назад"
+            backBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (e.target.closest('.back-btn')) {
+                        showScreen('home');
+                    }
+                });
+            });
+            
+            // Загрузка изображений товаров
+            function loadProductImages() {
+                const productImages = document.querySelectorAll('.product-image');
+                productImages.forEach(img => {
+                    if (img.classList.contains('loading')) {
+                        // Здесь будет загрузка изображения из бота
+                        // Временный заглушка
+                        setTimeout(() => {
+                            img.classList.remove('loading');
+                            img.style.background = 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%)';
+                            img.innerHTML = '<i class="fas fa-image" style="color: rgba(255, 215, 0, 0.3); font-size: 48px;"></i>';
+                        }, 1000);
                     }
                 });
             }
             
             // Инициализация
-            if (searchInput) {
-                searchInput.addEventListener('input', searchProducts);
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        searchProducts();
-                    }
-                });
-            }
-            
-            // Ленивая загрузка при загрузке страницы
-            lazyLoadImages();
-            
-            // Обновляем изображения при смене экрана
-            document.addEventListener('screenChange', lazyLoadImages);
-            
-            // Предотвращение дергания при скролле
-            let scrollTimeout;
-            window.addEventListener('scroll', function() {
-                clearTimeout(scrollTimeout);
-                document.body.classList.add('no-scroll-animation');
-                
-                scrollTimeout = setTimeout(function() {
-                    document.body.classList.remove('no-scroll-animation');
-                }, 100);
-            });
+            loadProductImages();
         });
-        
-        // Добавляем глобальное событие смены экрана
-        window.dispatchScreenChangeEvent = function() {
-            const event = new CustomEvent('screenChange');
-            document.dispatchEvent(event);
-        };
     </script>
 </body>
 </html>
