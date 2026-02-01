@@ -1,6 +1,7 @@
 // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let currentProduct = null;
+let currentCategory = '';
 
 // ========== РЕАЛЬНЫЕ ПРОДУКТЫ С НОРМАЛЬНЫМИ ФОТО ==========
 const products = [
@@ -141,7 +142,11 @@ const products = [
 
 // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 function showToast(message, type = 'success') {
-    const container = document.getElementById('toastContainer') || createToastContainer();
+    const container = document.getElementById('toastContainer');
+    if (!container) {
+        createToastContainer();
+        return showToast(message, type);
+    }
     
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -201,7 +206,7 @@ function initAgeVerification() {
     
     if (isVerified) {
         document.getElementById('ageModal').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
+        document.getElementById('app').style.display = 'flex';
         return;
     }
     
@@ -214,7 +219,7 @@ function initAgeVerification() {
             localStorage.setItem('birthDate', new Date().toISOString().split('T')[0]);
             
             document.getElementById('ageModal').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
+            document.getElementById('app').style.display = 'flex';
             
             setTimeout(() => {
                 showToast('Добро пожаловать в Smoke Premium!', 'success');
@@ -238,29 +243,22 @@ function showScreen(screenId) {
     const screen = document.getElementById(screenId);
     if (screen) {
         screen.classList.add('active');
-    }
-    
-    document.querySelectorAll('.nav-link').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    if (screenId === 'homeScreen') {
-        const catalogBtn = document.getElementById('catalogBtn');
-        if (catalogBtn) catalogBtn.classList.add('active');
+        // Прокручиваем вверх
+        screen.scrollTop = 0;
     }
     
     updateCartCount();
 }
 
 // ========== КАТАЛОГ И ТОВАРЫ ==========
-function renderProducts(filterCategory = '') {
+function renderProducts() {
     const productsGrid = document.getElementById('productsGrid');
     if (!productsGrid) return;
     
     let filteredProducts = products;
     
-    if (filterCategory) {
-        filteredProducts = products.filter(p => p.category === filterCategory);
+    if (currentCategory) {
+        filteredProducts = products.filter(p => p.category === currentCategory);
     }
     
     const searchInput = document.getElementById('searchInput');
@@ -273,24 +271,14 @@ function renderProducts(filterCategory = '') {
         );
     }
     
-    const brandFilter = document.getElementById('brandFilter');
-    if (brandFilter && brandFilter.value) {
-        filteredProducts = filteredProducts.filter(p => p.brand === brandFilter.value);
-    }
-    
-    const strengthFilter = document.getElementById('strengthFilter');
-    if (strengthFilter && strengthFilter.value) {
-        filteredProducts = filteredProducts.filter(p => p.strength === strengthFilter.value);
-    }
-    
     productsGrid.innerHTML = '';
     
     if (filteredProducts.length === 0) {
         productsGrid.innerHTML = `
-            <div class="no-products">
-                <i class="fas fa-search"></i>
-                <h3>Товары не найдены</h3>
-                <p>Попробуйте изменить параметры поиска</p>
+            <div class="no-products" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <i class="fas fa-search fa-3x" style="color: rgba(255, 255, 255, 0.1); margin-bottom: 20px;"></i>
+                <h3 style="color: #FFD700; margin-bottom: 10px;">Товары не найдены</h3>
+                <p style="color: rgba(255, 255, 255, 0.6);">Попробуйте изменить параметры поиска</p>
             </div>
         `;
         return;
@@ -300,57 +288,68 @@ function renderProducts(filterCategory = '') {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         productCard.innerHTML = `
-            ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
-            <button class="quick-add-btn" data-id="${product.id}" title="Быстро добавить в корзину">
-                <i class="fas fa-cart-plus"></i>
-            </button>
-            <div class="product-image" style="background-image: url('${product.image}')"></div>
+            ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+            <div class="product-image loading" data-src="${product.image}"></div>
             <div class="product-info">
-                <div class="product-header">
-                    <h3 class="product-name">${product.name}</h3>
-                    <span class="product-price">${product.price} ₽</span>
-                </div>
-                <p class="product-brand">${product.brand}</p>
+                <h3 class="product-name">${product.name}</h3>
                 <p class="product-flavor">${product.flavor}</p>
-                <div class="product-tags">
-                    <span class="tag strength">${product.strength}</span>
-                    <span class="tag in-stock">В наличии</span>
+                <div class="product-meta">
+                    <span class="product-brand">${product.brand}</span>
+                    <span class="product-strength">${product.strength}</span>
                 </div>
-                <button class="buy-btn" data-id="${product.id}">
-                    <i class="fas fa-shopping-cart"></i>
-                    Купить
-                </button>
+                <div class="product-footer">
+                    <div class="product-price">${product.price} ₽</div>
+                    <button class="add-to-cart-btn" data-product-id="${product.id}">
+                        <i class="fas fa-shopping-cart"></i>
+                    </button>
+                </div>
             </div>
         `;
         
-        productCard.querySelector('.product-image, .product-name').addEventListener('click', (e) => {
-            if (!e.target.classList.contains('quick-add-btn') && !e.target.classList.contains('buy-btn')) {
+        // Клик по карточке для просмотра деталей
+        productCard.addEventListener('click', (e) => {
+            if (!e.target.closest('.add-to-cart-btn')) {
                 showProductDetail(product.id);
             }
         });
         
-        const quickAddBtn = productCard.querySelector('.quick-add-btn');
-        quickAddBtn.addEventListener('click', (e) => {
+        // Кнопка добавления в корзину
+        const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
+        addToCartBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             addToCart(product.id, 1);
-            quickAddBtn.classList.add('adding-to-cart');
-            setTimeout(() => quickAddBtn.classList.remove('adding-to-cart'), 300);
-            showToast(`${product.name} добавлен в корзину!`, 'success');
-        });
-        
-        const buyBtn = productCard.querySelector('.buy-btn');
-        buyBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            addToCart(product.id, 1);
-            showToast(`${product.name} добавлен в корзину!`, 'success');
             
-            setTimeout(() => {
-                showScreen('cartScreen');
-                renderCart();
-            }, 1000);
+            // Анимация кнопки
+            addToCartBtn.classList.add('adding');
+            setTimeout(() => addToCartBtn.classList.remove('adding'), 300);
+            
+            showToast(`${product.name} добавлен в корзину!`, 'success');
         });
         
         productsGrid.appendChild(productCard);
+    });
+    
+    // Загружаем изображения
+    loadProductImages();
+}
+
+function loadProductImages() {
+    const productImages = document.querySelectorAll('.product-image');
+    productImages.forEach(img => {
+        if (img.classList.contains('loading') && img.dataset.src) {
+            const src = img.dataset.src;
+            const image = new Image();
+            image.src = src;
+            image.onload = () => {
+                img.classList.remove('loading');
+                img.style.backgroundImage = `url('${src}')`;
+                img.innerHTML = '';
+            };
+            image.onerror = () => {
+                img.classList.remove('loading');
+                img.innerHTML = '<i class="fas fa-image" style="color: rgba(255, 215, 0, 0.3); font-size: 48px;"></i>';
+            };
+        }
     });
 }
 
@@ -360,6 +359,7 @@ function showProductDetail(productId) {
     
     currentProduct = product;
     
+    // Обновляем данные на странице товара
     document.getElementById('productName').textContent = product.name;
     document.getElementById('productBrand').textContent = product.brand;
     document.getElementById('productStrength').textContent = product.strength;
@@ -367,11 +367,23 @@ function showProductDetail(productId) {
     document.getElementById('productDescription').textContent = product.description;
     document.getElementById('productPrice').textContent = product.price;
     
+    // Загружаем изображение товара
     const productImage = document.getElementById('productImage');
-    if (productImage) {
-        productImage.style.backgroundImage = `url('${product.image}')`;
+    if (productImage && product.image) {
+        productImage.querySelector('.product-image').classList.add('loading');
+        const img = new Image();
+        img.src = product.image;
+        img.onload = () => {
+            productImage.querySelector('.product-image').classList.remove('loading');
+            productImage.querySelector('.product-image').style.backgroundImage = `url('${product.image}')`;
+        };
+        img.onerror = () => {
+            productImage.querySelector('.product-image').classList.remove('loading');
+            productImage.querySelector('.product-image').innerHTML = '<i class="fas fa-image" style="color: rgba(255, 215, 0, 0.3); font-size: 48px;"></i>';
+        };
     }
     
+    // Сбрасываем количество
     document.getElementById('productQty').textContent = '1';
     
     showScreen('productScreen');
@@ -396,10 +408,11 @@ function addToCart(productId, quantity = 1) {
     saveCartToStorage();
     updateCartCount();
     
+    // Анимация иконки корзины
     const cartBtn = document.getElementById('cartBtn');
     if (cartBtn) {
-        cartBtn.classList.add('adding-to-cart');
-        setTimeout(() => cartBtn.classList.remove('adding-to-cart'), 300);
+        cartBtn.classList.add('pulse');
+        setTimeout(() => cartBtn.classList.remove('pulse'), 300);
     }
 }
 
@@ -422,7 +435,6 @@ function updateCartItemQuantity(productId, newQuantity) {
         item.quantity = newQuantity;
         saveCartToStorage();
         renderCart();
-        showToast('Количество обновлено', 'success');
     }
 }
 
@@ -438,23 +450,16 @@ function renderCart() {
     
     if (cart.length === 0) {
         cartItems.innerHTML = `
-            <div class="empty-cart">
-                <i class="fas fa-shopping-cart fa-3x"></i>
-                <h3>Корзина пуста</h3>
-                <p>Добавьте товары из каталога</p>
-                <button class="btn btn-primary to-catalog" style="margin-top: 20px;">
+            <div class="empty-cart" style="text-align: center; padding: 60px 20px;">
+                <i class="fas fa-shopping-cart fa-3x" style="color: rgba(255, 255, 255, 0.1); margin-bottom: 20px;"></i>
+                <h3 style="color: #FFD700; margin-bottom: 10px;">Корзина пуста</h3>
+                <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 30px;">Добавьте товары из каталога</p>
+                <button class="btn btn-primary to-catalog" style="padding: 14px 28px;">
                     <i class="fas fa-store"></i>
                     Перейти в каталог
                 </button>
             </div>
         `;
-        
-        setTimeout(() => {
-            document.querySelector('.to-catalog')?.addEventListener('click', () => {
-                showScreen('catalogScreen');
-                renderProducts();
-            });
-        }, 100);
         
         if (totalItems) totalItems.textContent = '0';
         if (totalPrice) totalPrice.textContent = '0 ₽';
@@ -474,27 +479,24 @@ function renderCart() {
         itemsCount += item.quantity;
         
         itemsHTML += `
-            <div class="cart-item" data-id="${item.id}">
-                <div class="cart-item-image" style="background-image: url('${item.image}')"></div>
-                <div class="cart-item-info">
-                    <h3 class="cart-item-name">${item.name}</h3>
-                    <p class="cart-item-meta">${item.brand} • ${item.flavor}</p>
-                    <div class="cart-item-controls">
-                        <div class="cart-item-qty">
-                            <button class="qty-btn minus" onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})">
+            <div class="cart-item" style="display: flex; align-items: center; background: rgba(30, 30, 30, 0.6); border-radius: 12px; padding: 15px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                <div class="cart-item-image" style="width: 80px; height: 80px; background-image: url('${item.image}'); background-size: cover; background-position: center; border-radius: 8px; margin-right: 15px;"></div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 16px; margin-bottom: 5px; color: white;">${item.name}</h3>
+                    <p style="font-size: 13px; color: #FFD700; margin-bottom: 10px;">${item.brand} • ${item.flavor}</p>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button class="back-btn minus" style="width: 30px; height: 30px;" onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})">
                                 <i class="fas fa-minus"></i>
                             </button>
-                            <span class="qty-value">${item.quantity}</span>
-                            <button class="qty-btn plus" onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">
+                            <span style="font-weight: 600;">${item.quantity}</span>
+                            <button class="back-btn plus" style="width: 30px; height: 30px;" onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
-                        <button class="remove-item" onclick="removeFromCart(${item.id})" title="Удалить">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <span style="font-weight: 700; color: #FFD700; font-size: 18px;">${itemTotal} ₽</span>
                     </div>
                 </div>
-                <div class="cart-item-price">${itemTotal} ₽</div>
             </div>
         `;
     });
@@ -509,7 +511,7 @@ function renderCart() {
         let orderHTML = '';
         cart.forEach(item => {
             orderHTML += `
-                <div class="order-item">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                     <span>${item.name} × ${item.quantity}</span>
                     <span>${item.price * item.quantity} ₽</span>
                 </div>
@@ -529,13 +531,11 @@ function showOrderConfirmation(orderId) {
     if (orderNumber) orderNumber.textContent = `#${orderId}`;
     if (modal) {
         modal.style.display = 'flex';
-        modal.classList.add('active');
         
         const closeBtn = document.getElementById('closeOrderConfirm');
         if (closeBtn) {
             closeBtn.onclick = () => {
                 modal.style.display = 'none';
-                modal.classList.remove('active');
                 showScreen('homeScreen');
             };
         }
@@ -543,7 +543,6 @@ function showOrderConfirmation(orderId) {
         setTimeout(() => {
             if (modal.style.display !== 'none') {
                 modal.style.display = 'none';
-                modal.classList.remove('active');
                 showScreen('homeScreen');
             }
         }, 5000);
@@ -601,70 +600,81 @@ function processOrder() {
     deliveryAddress.value = '';
     
     showOrderConfirmation(orderId);
-    simulateTelegramNotification(order);
+    
+    // Симуляция отправки в Telegram бот
+    sendOrderToTelegram(order);
 }
 
-function simulateTelegramNotification(order) {
+function sendOrderToTelegram(order) {
     console.log('Telegram notification sent:', order);
+    // Здесь будет код для отправки заказа в Telegram бот
+    // fetch('URL_ВАШЕГО_БОТА', {
+    //     method: 'POST',
+    //     headers: {'Content-Type': 'application/json'},
+    //     body: JSON.stringify(order)
+    // });
 }
 
 // ========== АНИМАЦИИ КНОПОК ==========
 function addButtonPressEffect() {
     document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.buy-btn, .order-btn, #checkoutBtn, #confirmOrderBtn, .qty-btn, .remove-item');
+        const btn = e.target.closest('.btn-primary, #checkoutBtn, #confirmOrderBtn, .add-to-cart-btn');
         if (btn && !btn.disabled) {
-            btn.classList.add('btn-pressed');
-            setTimeout(() => btn.classList.remove('btn-pressed'), 150);
+            btn.classList.add('pressed');
+            setTimeout(() => btn.classList.remove('pressed'), 150);
         }
     });
-    
-    setInterval(() => {
-        const checkoutBtn = document.getElementById('checkoutBtn');
-        if (checkoutBtn && !checkoutBtn.disabled && cart.length > 0) {
-            checkoutBtn.classList.add('pulse-animation');
-            setTimeout(() => checkoutBtn.classList.remove('pulse-animation'), 500);
-        }
-    }, 3000);
 }
 
 // ========== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ==========
 function initApp() {
     initAgeVerification();
     
-    document.getElementById('catalogBtn')?.addEventListener('click', () => {
-        showScreen('catalogScreen');
-        renderProducts();
+    // Навигация по категориям
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const category = card.dataset.category;
+            currentCategory = category;
+            showScreen('catalogScreen');
+            renderProducts();
+        });
     });
     
-    document.getElementById('cartBtn')?.addEventListener('click', () => {
+    // Кнопка "Смотреть" на баннере
+    document.querySelectorAll('.to-catalog').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentCategory = '';
+            showScreen('catalogScreen');
+            renderProducts();
+        });
+    });
+    
+    // Корзина
+    document.getElementById('cartBtn').addEventListener('click', () => {
         showScreen('cartScreen');
         renderCart();
     });
     
+    // Кнопки "Назад"
     document.querySelectorAll('.back-btn').forEach(btn => {
-        btn.addEventListener('click', () => showScreen('homeScreen'));
-    });
-    
-    document.querySelectorAll('.category-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const category = card.dataset.category;
-            showScreen('catalogScreen');
-            renderProducts(category);
+        btn.addEventListener('click', () => {
+            if (document.getElementById('productScreen').classList.contains('active')) {
+                showScreen('catalogScreen');
+            } else {
+                showScreen('homeScreen');
+            }
         });
     });
     
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('to-catalog') || 
-            e.target.closest('.to-catalog')) {
-            showScreen('catalogScreen');
+    // Поиск
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
             renderProducts();
-        }
-    });
+        });
+    }
     
-    document.getElementById('searchInput')?.addEventListener('input', () => renderProducts());
-    document.getElementById('brandFilter')?.addEventListener('change', () => renderProducts());
-    document.getElementById('strengthFilter')?.addEventListener('change', () => renderProducts());
-    
+    // Управление количеством товара
     const minusBtn = document.querySelector('.qty-btn.minus');
     const plusBtn = document.querySelector('.qty-btn.plus');
     const qtyValue = document.getElementById('productQty');
@@ -683,9 +693,10 @@ function initApp() {
         });
     }
     
-    const addToCartBtn = document.querySelector('.add-to-cart-btn');
-    if (addToCartBtn) {
-        addToCartBtn.addEventListener('click', () => {
+    // Добавление товара в корзину со страницы товара
+    const addToCartBtnFull = document.querySelector('.add-to-cart-btn-full');
+    if (addToCartBtnFull) {
+        addToCartBtnFull.addEventListener('click', () => {
             if (!currentProduct) return;
             
             const quantity = parseInt(document.getElementById('productQty').textContent);
@@ -699,10 +710,13 @@ function initApp() {
         });
     }
     
+    // Оформление заказа
     const checkoutBtn = document.getElementById('checkoutBtn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', () => {
-            showScreen('checkoutScreen');
+            if (cart.length > 0) {
+                showScreen('checkoutScreen');
+            }
         });
     }
     
@@ -711,6 +725,7 @@ function initApp() {
         confirmOrderBtn.addEventListener('click', processOrder);
     }
     
+    // Выбор способа оплаты
     const paymentOptions = document.querySelectorAll('.payment-option');
     paymentOptions.forEach(option => {
         option.addEventListener('click', () => {
@@ -720,37 +735,13 @@ function initApp() {
         });
     });
     
-    let currentPromo = 0;
-    const promoSlides = document.querySelectorAll('.promo-slide');
-    const promoDots = document.querySelectorAll('.promo-dot');
-    
-    if (promoSlides.length > 1) {
-        setInterval(() => {
-            promoSlides[currentPromo].classList.remove('active');
-            promoDots[currentPromo].classList.remove('active');
-            
-            currentPromo = (currentPromo + 1) % promoSlides.length;
-            
-            promoSlides[currentPromo].classList.add('active');
-            promoDots[currentPromo].classList.add('active');
-        }, 5000);
-        
-        promoDots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                promoSlides[currentPromo].classList.remove('active');
-                promoDots[currentPromo].classList.remove('active');
-                
-                currentPromo = index;
-                
-                promoSlides[currentPromo].classList.add('active');
-                promoDots[currentPromo].classList.add('active');
-            });
-        });
-    }
-    
     updateCartCount();
     addButtonPressEffect();
 }
 
 // ========== ЗАПУСК ПРИЛОЖЕНИЯ ==========
 document.addEventListener('DOMContentLoaded', initApp);
+
+// Добавляем глобальные функции для вызова из HTML
+window.updateCartItemQuantity = updateCartItemQuantity;
+window.removeFromCart = removeFromCart;
