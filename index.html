@@ -1,56 +1,73 @@
 <script>
-    // Инициализация Telegram Web App
+    // === Инициализация Telegram Mini App ===
     const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-    tg.enableClosingConfirmation();
-    console.log('Telegram Web App инициализирован:', tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : 'Нет пользователя');
+    if (!tg) {
+        console.error('Telegram Web App не инициализирован! Проверь, что ты открываешь через Telegram.');
+        alert('Ошибка: открой приложение в Telegram!');
+    } else {
+        tg.ready();
+        tg.expand(); // Разворачиваем на весь экран
+        tg.enableClosingConfirmation(); // Подтверждение закрытия
+        console.log('Telegram Web App загружен. Пользователь:', tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : 'Аноним');
+    }
 
-    // Показываем модал
+    // === Показываем модал по умолчанию ===
     document.getElementById('ageModal').style.display = 'flex';
 
-    // Кнопка "Мне есть 18+"
-    document.getElementById('ageConfirm').onclick = function() {
-        console.log('Кнопка 18+ нажата!');
+    // === Кнопка "Мне есть 18+" ===
+    document.getElementById('ageConfirm').addEventListener('click', function() {
+        console.log('Кнопка "Мне есть 18+" нажата!');
 
         // Скрываем модал
         document.getElementById('ageModal').style.display = 'none';
 
-        // Показываем app и принудительно делаем видимым
+        // Показываем основной контент и фиксим возможный чёрный экран
         const app = document.getElementById('app');
         app.style.display = 'block';
-        app.style.backgroundColor = 'white'; // на случай чёрного фона
-        app.style.color = 'black';
-        app.style.minHeight = '100vh';
         app.style.visibility = 'visible';
+        app.style.opacity = '1';
+        app.style.backgroundColor = '#ffffff'; // Белый фон на всякий случай
+        app.style.minHeight = '100vh';
+        app.style.color = '#000000';
 
-        // Сохраняем подтверждение
+        // Фикс body и html (чтобы не было чёрного фона от CSS)
+        document.body.style.backgroundColor = '#f0f0f0';
+        document.documentElement.style.backgroundColor = '#f0f0f0';
+
+        // Сохраняем подтверждение (чтобы при перезагрузке не показывало модал)
         localStorage.setItem('isAdultConfirmed', 'true');
 
-        // Уведомление от Telegram
+        // Красивое уведомление от Telegram
         tg.showPopup({
             title: 'Добро пожаловать!',
-            message: 'Возраст подтверждён. Наслаждайтесь покупками.',
+            message: 'Возраст подтверждён. Наслаждайся покупками!',
             buttons: [{ type: 'ok' }]
         });
 
-        console.log('App показан, фон принудительно белый');
-    };
+        console.log('Основной контент показан. Если экран чёрный — проверь CSS в DevTools.');
+    });
 
-    // Кнопка "Мне нет 18"
-    document.getElementById('ageDeny').onclick = function() {
-        console.log('Кнопка Нет 18 нажата');
+    // === Кнопка "Мне нет 18" ===
+    document.getElementById('ageDeny').addEventListener('click', function() {
+        console.log('Кнопка "Мне нет 18" нажата');
         tg.showAlert('Доступ запрещён. Приложение закроется.');
-        tg.close();
-    };
+        tg.close(); // Закрываем Mini App
+    });
 
-    // Если уже подтверждено (перезагрузка страницы)
+    // === Если возраст уже подтверждён (при перезагрузке страницы) ===
     if (localStorage.getItem('isAdultConfirmed') === 'true') {
         document.getElementById('ageModal').style.display = 'none';
         document.getElementById('app').style.display = 'block';
-        console.log('Возраст уже подтверждён — модал скрыт');
+        document.getElementById('app').style.visibility = 'visible';
+        document.getElementById('app').style.opacity = '1';
+        document.body.style.backgroundColor = '#f0f0f0';
+        console.log('Возраст уже подтверждён — модал скрыт автоматически');
     }
 
-    // Отладка: если app чёрный — меняем фон body
-    document.body.style.backgroundColor = '#f0f0f0'; // светлый фон на всякий случай
+    // === Дополнительная отладка: если что-то не видно ===
+    setTimeout(() => {
+        console.log('Через 2 секунды: display app =', document.getElementById('app').style.display);
+        console.log('visibility app =', document.getElementById('app').style.visibility);
+        console.log('body background =', document.body.style.backgroundColor);
+    }, 2000);
 </script>
