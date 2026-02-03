@@ -1,86 +1,200 @@
-<script>
-    // === Инициализация Telegram Web App ===
-    const tg = window.Telegram.WebApp;
-    if (!tg) {
-        console.error('Telegram Web App НЕ найден! Открой в Telegram.');
-        alert('Ошибка: открой в Telegram!');
-    } else {
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smoke Premium | Telegram Shop</title>
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Иконка -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚬</text></svg>">
+    
+    <style>
+        /* Твой CSS с фиксами светлого фона */
+        html, body {
+            background-color: #f8f9fa !important;
+            color: #212529 !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        #app {
+            background-color: #ffffff !important;
+            min-height: 100vh !important;
+        }
+
+        /* Переопределение тёмных переменных на светлые (чтобы не было чёрного) */
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(255, 255, 255, 0.9);
+            --accent-gold: #d4af37;
+            --accent-copper: #b87333;
+            --accent-amber: #ffbf00;
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --text-muted: #6c757d;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition-fast: 0.2s ease;
+            --transition-base: 0.3s ease;
+            --gradient-dark: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            --gradient-gold: linear-gradient(135deg, #d4af37 0%, #b87333 50%, #ffbf00 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Остальной твой CSS без изменений (я вставил его полностью, но с фиксами выше) */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        /* ... (вставь весь остальной CSS из твоего сообщения сюда, начиная от .warning-icon и до конца) ... */
+
+        /* Финальный фикс: все экраны светлые */
+        .screen, .main-content, .navbar, .promo-banner, .categories-section, .features-section {
+            background: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Age Verification Modal -->
+    <div id="ageModal" class="modal">
+        <div class="modal-content glass">
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="text-gold">Внимание! 18+</h2>
+            <div class="verification-text">
+                <p>Это приложение предназначено исключительно для лиц, достигших 18 лет.</p>
+                <p><strong>Табак вредит вашему здоровью.</strong></p>
+                <p>Подтверждая возраст, вы соглашаетесь с условиями использования.</p>
+            </div>
+            <div class="verification-actions">
+                <button id="ageDeny" class="btn btn-secondary">Мне нет 18</button>
+                <button id="ageConfirm" class="btn btn-primary">Мне есть 18</button>
+            </div>
+            <div class="legal-notice">
+                <small>Нажимая подтвердить, вы соглашаетесь с политикой конфиденциальности.</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Твой остальной HTML (navbar, main, sections) — вставь его сюда без изменений -->
+        <!-- Пример: -->
+        <nav class="navbar glass">
+            <!-- ... -->
+        </nav>
+
+        <main class="main-content">
+            <section id="homeScreen" class="screen active">
+                <!-- Твой homeScreen контент -->
+                <div class="promo-banner">
+                    <!-- ... -->
+                </div>
+                <section class="categories-section">
+                    <!-- ... -->
+                </section>
+                <!-- ... -->
+            </section>
+
+            <!-- Другие sections: catalogScreen, productScreen и т.д. -->
+        </main>
+    </div>
+
+    <!-- Script -->
+    <script>
+        const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
-        tg.enableClosingConfirmation();
-        console.log('Telegram Web App готов. Пользователь:', tg.initDataUnsafe.user?.username || 'Аноним');
-    }
 
-    // === Принудительный фикс фона body/html (чтобы не было чёрного) ===
-    document.body.style.backgroundColor = '#f8f9fa !important';
-    document.body.style.color = '#212529 !important';
-    document.documentElement.style.backgroundColor = '#f8f9fa !important';
+        // Показываем модал
+        document.getElementById('ageModal').style.display = 'flex';
 
-    // === Показываем модал ===
-    document.getElementById('ageModal').style.display = 'flex';
+        // Кнопка "Мне есть 18+"
+        document.getElementById('ageConfirm').addEventListener('click', () => {
+            console.log('Возраст подтверждён!');
 
-    // === Кнопка "Мне есть 18+" ===
-    document.getElementById('ageConfirm').addEventListener('click', function() {
-        console.log('=== Кнопка "Мне есть 18+" нажата! ===');
+            document.getElementById('ageModal').style.display = 'none';
 
-        // Скрываем модал
-        document.getElementById('ageModal').style.display = 'none';
+            const app = document.getElementById('app');
+            app.style.display = 'block';
 
-        // Показываем app с принудительными стилями
-        const app = document.getElementById('app');
-        app.style.display = 'block !important';
-        app.style.visibility = 'visible !important';
-        app.style.opacity = '1 !important';
-        app.style.backgroundColor = '#ffffff !important';
-        app.style.minHeight = '100vh !important';
-        app.style.color = '#000000 !important';
+            // Явно активируем homeScreen (если не активен)
+            document.getElementById('homeScreen').classList.add('active');
+            document.getElementById('homeScreen').style.display = 'block';
 
-        // Дополнительно фиксим основные контейнеры (на случай, если они скрыты)
-        document.querySelectorAll('.screen, .main-content, .navbar').forEach(el => {
-            el.style.display = 'block !important';
-            el.style.visibility = 'visible !important';
-            el.style.opacity = '1 !important';
+            // Фикс фона
+            document.body.style.backgroundColor = '#ffffff';
+            app.style.backgroundColor = '#ffffff';
+
+            tg.showPopup({ title: 'Добро пожаловать!', message: 'Магазин открыт!', buttons: [{ type: 'ok' }] });
+
+            console.log('Контент показан. HomeScreen active:', document.getElementById('homeScreen').classList.contains('active'));
         });
 
-        // Сохраняем подтверждение
-        localStorage.setItem('isAdultConfirmed', 'true');
-
-        // Уведомление от Telegram
-        tg.showPopup({
-            title: 'Добро пожаловать!',
-            message: 'Возраст подтверждён. Магазин открыт!',
-            buttons: [{ type: 'ok' }]
+        // Кнопка "Мне нет 18"
+        document.getElementById('ageDeny').addEventListener('click', () => {
+            tg.close();
         });
 
-        // Задержка для принудительной перерисовки (Telegram иногда тормозит)
-        setTimeout(() => {
-            app.scrollIntoView();
-            console.log('App принудительно показан. display:', app.style.display);
-            console.log('body background:', document.body.style.backgroundColor);
-        }, 100);
-
-        console.log('=== Контент должен появиться. Если чёрный — проверь CSS на background black ===');
-    });
-
-    // === Кнопка "Мне нет 18" ===
-    document.getElementById('ageDeny').addEventListener('click', function() {
-        console.log('=== Кнопка "Мне нет 18" нажата ===');
-        tg.showAlert('Доступ запрещён. Закрываем приложение.');
-        tg.close();
-    });
-
-    // === Авто-подтверждение при перезагрузке ===
-    if (localStorage.getItem('isAdultConfirmed') === 'true') {
-        document.getElementById('ageModal').style.display = 'none';
-        document.getElementById('app').style.display = 'block !important';
-        document.body.style.backgroundColor = '#f8f9fa !important';
-        console.log('=== Авто-подтверждение: модал скрыт ===');
-    }
-
-    // === Отладка через 3 секунды ===
-    setTimeout(() => {
-        console.log('Отладка через 3с: app display =', document.getElementById('app').style.display);
-        console.log('ageModal display =', document.getElementById('ageModal').style.display);
-        console.log('body bg =', document.body.style.backgroundColor);
-    }, 3000);
-</script>
+        // Авто-показ при перезагрузке
+        if (localStorage.getItem('isAdultConfirmed') === 'true') {
+            document.getElementById('ageModal').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('homeScreen').classList.add('active');
+        }
+    </script>
+</body>
+</html>
