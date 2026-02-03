@@ -1,157 +1,135 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>АлиБаба Mini — Кальяны и Вейп</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #111;
-      color: #fff;
-    }
-    header {
-      background: #1a1a1a;
-      padding: 15px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    h1 {
-      margin: 0;
-      color: #ff6b00; /* оранжевый как у Alibaba */
-    }
-    .search {
-      margin: 10px 0;
-    }
-    input {
-      width: 80%;
-      padding: 10px;
-      border-radius: 20px;
-      border: none;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 15px;
-      padding: 15px;
-    }
-    .card {
-      background: #222;
-      border-radius: 12px;
-      overflow: hidden;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    }
-    .card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-    }
-    .info {
-      padding: 10px;
-    }
-    .price {
-      color: #ffcc00;
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-    button {
-      background: #ff6b00;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-    button:hover {
-      background: #e55f00;
-    }
-    .main-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #0088cc;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 50px;
-      font-size: 1.1em;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-      z-index: 100;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Маркетплейс | B2B-Площадка</title>
+    <style>
+        /* Базовые стили для каркаса */
+        * { box-sizing: border-box; margin: 0; font-family: sans-serif; }
+        body { color: #333; line-height: 1.6; }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+
+        /* Шапка */
+        .site-header { background: #fff; border-bottom: 1px solid #eaeaea; padding: 1rem 0; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #FF6A00; }
+        .main-nav a { margin-left: 1.5rem; text-decoration: none; color: #555; }
+        .main-nav a:hover { color: #FF6A00; }
+
+        /* Герой-секция */
+        .hero { background: linear-gradient(to right, #f8f9fa, #e9ecef); padding: 4rem 0; text-align: center; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #222; }
+        .search-box { max-width: 600px; margin: 2rem auto; display: flex; }
+        .search-box input { flex-grow: 1; padding: 1rem; border: 2px solid #FF6A00; border-radius: 4px 0 0 4px; font-size: 1rem; }
+        .search-box button { background: #FF6A00; color: white; border: none; padding: 0 2rem; border-radius: 0 4px 4px 0; cursor: pointer; }
+
+        /* Сетка товаров */
+        .featured-products { padding: 3rem 0; }
+        .section-title { text-align: center; margin-bottom: 2rem; font-size: 2rem; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; }
+        .product-card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; background: white; transition: transform 0.3s; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 4px; }
+        .product-card h3 { margin: 0.5rem 0; font-size: 1.1rem; }
+        .product-card .price { color: #FF6A00; font-weight: bold; font-size: 1.2rem; }
+        .product-card .moq { color: #666; font-size: 0.9rem; }
+
+        /* Футер */
+        .site-footer { background: #2d2d2d; color: #ccc; padding: 3rem 0; margin-top: 3rem; }
+        .footer-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
+        .footer-column h4 { color: white; margin-bottom: 1rem; }
+        .footer-column a { display: block; color: #aaa; text-decoration: none; margin-bottom: 0.5rem; }
+        .footer-column a:hover { color: #FF6A00; }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header-content, .search-box { flex-direction: column; }
+            .main-nav a { margin: 0.5rem 0; display: inline-block; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
 </head>
 <body>
+    <!-- Шапка сайта с логотипом и навигацией -->
+    <header class="site-header">
+        <div class="container header-content">
+            <div class="logo">B2B MARKET</div>
+            <nav class="main-nav">
+                <a href="#">Для поставщиков</a>
+                <a href="#">Помощь</a>
+                <a href="#">Войти</a>
+                <a href="#" style="background: #FF6A00; color: white; padding: 0.5rem 1rem; border-radius: 4px;">Стать продавцом</a>
+            </nav>
+        </div>
+    </header>
 
-  <header>
-    <h1>АлиБаба Mini</h1>
-    <p>Супермаркет кальянов и вейпа</p>
-    <div class="search">
-      <input type="text" placeholder="Поиск товаров...">
-    </div>
-  </header>
+    <!-- Основная секция с поиском -->
+    <section class="hero">
+        <div class="container">
+            <h1>Оптовый рынок для бизнеса</h1>
+            <p>Найдите производителей и поставщиков для вашей компании</p>
+            <div class="search-box">
+                <input type="text" placeholder="Например: электронные компоненты, ткань оптом...">
+                <button>Поиск</button>
+            </div>
+        </div>
+    </section>
 
-  <div class="container">
-    <!-- Примеры товаров — замени картинки и данные на свои -->
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Кальян">
-      <div class="info">
-        <h3>Кальян Alpha Hookah</h3>
-        <div class="price">₽ 4 990</div>
-        <button onclick="addToCart('Кальян Alpha Hookah')">В корзину</button>
-      </div>
-    </div>
+    <!-- Секция с примерами товаров -->
+    <section class="featured-products container">
+        <h2 class="section-title">Популярные товары для закупок</h2>
+        <div class="products-grid">
+            <!-- Карточка товара 1 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x180/CCCCCC/969696?text=Товар+1" alt="Промышленный вентилятор">
+                <h3>Промышленный вентилятор</h3>
+                <p class="price">$450 / шт</p>
+                <p class="moq">MOQ: 50 штук</p>
+                <p>Проверенный поставщик • 4.8 ★</p>
+            </div>
+            <!-- Карточка товара 2 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x180/CCCCCC/969696?text=Товар+2" alt="Экологичная упаковка">
+                <h3>Биоразлагаемая упаковка</h3>
+                <p class="price">$0.15 / шт</p>
+                <p class="moq">MOQ: 10 000 штук</p>
+                <p>Gold Supplier • 4.9 ★</p>
+            </div>
+            <!-- Добавьте больше карточек по аналогии -->
+        </div>
+    </section>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1606842272845-4e6e0d7e4b0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Табак">
-      <div class="info">
-        <h3>Табак Starbuzz 250г</h3>
-        <div class="price">₽ 1 290</div>
-        <button onclick="addToCart('Табак Starbuzz')">В корзину</button>
-      </div>
-    </div>
+    <!-- Подвал сайта -->
+    <footer class="site-footer">
+        <div class="container footer-columns">
+            <div class="footer-column">
+                <h4>О площадке</h4>
+                <a href="#">Как это работает</a>
+                <a href="#">Гарантия сделки (Escrow)</a>
+                <a href="#">Проверка поставщиков</a>
+            </div>
+            <div class="footer-column">
+                <h4>Для бизнеса</h4>
+                <a href="#">Стать продавцом</a>
+                <a href="#">Тарифы и подписки</a>
+                <a href="#">Реклама на площадке</a>
+            </div>
+        </div>
+    </footer>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1588508091600-1c2e5a0e0a0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Одноразка">
-      <div class="info">
-        <h3>Elf Bar 15000 Puffs</h3>
-        <div class="price">₽ 1 990</div>
-        <button onclick="addToCart('Elf Bar')">В корзину</button>
-      </div>
-    </div>
+    <script>
+        // Простой JavaScript для примера интерактивности
+        document.querySelector('.search-box button').addEventListener('click', function() {
+            const query = document.querySelector('.search-box input').value;
+            if(query) {
+                alert(`Ищем: "${query}". В реальном приложении здесь будет отправка запроса на бэкенд.`);
+                // В реальном проекте: window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            }
+        });
 
-    <!-- Добавь ещё карточек по аналогии -->
-
-  </div>
-
-  <button class="main-btn" onclick="showCart()">Корзина (0)</button>
-
-  <script>
-    let cart = [];
-
-    function addToCart(name) {
-      cart.push(name);
-      alert(name + ' добавлен в корзину!');
-      document.querySelector('.main-btn').textContent = `Корзина (${cart.length})`;
-    }
-
-    function showCart() {
-      if (cart.length === 0) {
-        alert('Корзина пуста');
-      } else {
-        alert('В корзине:\n' + cart.join('\n'));
-      }
-    }
-
-    // Инициализация Telegram Web App
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand(); // на весь экран
-  </script>
-
+        // Динамическое обновление рейтинга (заглушка)
+        console.log("Код для отображения товаров, фильтрации и работы корзины будет здесь.");
+    </script>
 </body>
 </html>
