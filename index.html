@@ -1,105 +1,56 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smoke Premium | Telegram Shop</title>
-    
-    <!-- Telegram Web App SDK (обязательно добавь это!) -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Твой style.css (если он отдельный файл, оставь) -->
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Иконка -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚬</text></svg>">
-</head>
-<body>
-    <!-- Age Verification Modal -->
-    <div id="ageModal" class="modal">
-        <div class="modal-content glass">
-            <div class="warning-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h2 class="text-gold">Внимание! 18+</h2>
-            <div class="verification-text">
-                <p>Это приложение предназначено исключительно для лиц, достигших 18 лет.</p>
-                <p><strong>Табак вредит вашему здоровью.</strong></p>
-                <p>Подтверждая возраст, вы соглашаетесь с условиями использования.</p>
-            </div>
-            <div class="verification-actions">
-                <button id="ageDeny" class="btn btn-secondary">Мне нет 18</button>
-                <button id="ageConfirm" class="btn btn-primary">Мне есть 18</button>
-            </div>
-            <div class="legal-notice">
-                <small>Нажимая подтвердить, вы соглашаетесь с политикой конфиденциальности.</small>
-            </div>
-        </div>
-    </div>
+<script>
+    // Инициализация Telegram Web App
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.enableClosingConfirmation();
+    console.log('Telegram Web App инициализирован:', tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : 'Нет пользователя');
 
-    <!-- Main App -->
-    <div id="app" class="app-container" style="display: none;">
-        <!-- Твой остальной HTML без изменений (navbar, main, sections и т.д.) -->
-        <!-- ... (вставь сюда весь контент из твоего оригинального кода: navbar, homeScreen, catalogScreen, productScreen, cartScreen, checkoutScreen, orderConfirmModal, toastContainer) ... -->
-        <!-- Для краткости я не повторяю весь большой HTML, но оставь его как был -->
-    </div>
+    // Показываем модал
+    document.getElementById('ageModal').style.display = 'flex';
 
-    <!-- JavaScript прямо здесь (временный, пока нет script.js) -->
-    <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand(); // Разворачиваем на весь экран
-        tg.enableClosingConfirmation(); // Подтверждение закрытия
+    // Кнопка "Мне есть 18+"
+    document.getElementById('ageConfirm').onclick = function() {
+        console.log('Кнопка 18+ нажата!');
 
-        // Показываем модал по умолчанию
-        document.getElementById('ageModal').style.display = 'flex';
+        // Скрываем модал
+        document.getElementById('ageModal').style.display = 'none';
 
-        // Обработчик кнопки "Мне есть 18+"
-        document.getElementById('ageConfirm').addEventListener('click', function() {
-            console.log('Кнопка "Мне есть 18+" нажата!'); // Для отладки
+        // Показываем app и принудительно делаем видимым
+        const app = document.getElementById('app');
+        app.style.display = 'block';
+        app.style.backgroundColor = 'white'; // на случай чёрного фона
+        app.style.color = 'black';
+        app.style.minHeight = '100vh';
+        app.style.visibility = 'visible';
 
-            // Скрываем модал
-            document.getElementById('ageModal').style.display = 'none';
+        // Сохраняем подтверждение
+        localStorage.setItem('isAdultConfirmed', 'true');
 
-            // Показываем основной app
-            document.getElementById('app').style.display = 'block';
-
-            // Дополнительно: можно сохранить в localStorage, что возраст подтверждён
-            localStorage.setItem('isAdultConfirmed', 'true');
-
-            // Если нужно показать уведомление в Telegram
-            tg.showAlert('Возраст подтверждён! Добро пожаловать в магазин.');
-
-            // Если хочешь сразу открыть каталог или что-то
-            // document.getElementById('homeScreen').classList.add('active');
+        // Уведомление от Telegram
+        tg.showPopup({
+            title: 'Добро пожаловать!',
+            message: 'Возраст подтверждён. Наслаждайтесь покупками.',
+            buttons: [{ type: 'ok' }]
         });
 
-        // Обработчик кнопки "Мне нет 18"
-        document.getElementById('ageDeny').addEventListener('click', function() {
-            console.log('Кнопка "Мне нет 18" нажата!');
+        console.log('App показан, фон принудительно белый');
+    };
 
-            // Показываем сообщение и закрываем приложение
-            tg.showAlert('Доступ запрещён. Приложение закроется.');
-            
-            // Закрываем Mini App
-            tg.close();
-        });
+    // Кнопка "Мне нет 18"
+    document.getElementById('ageDeny').onclick = function() {
+        console.log('Кнопка Нет 18 нажата');
+        tg.showAlert('Доступ запрещён. Приложение закроется.');
+        tg.close();
+    };
 
-        // Если пользователь уже подтверждал возраст раньше (через localStorage)
-        if (localStorage.getItem('isAdultConfirmed') === 'true') {
-            document.getElementById('ageModal').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-        }
-    </script>
+    // Если уже подтверждено (перезагрузка страницы)
+    if (localStorage.getItem('isAdultConfirmed') === 'true') {
+        document.getElementById('ageModal').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        console.log('Возраст уже подтверждён — модал скрыт');
+    }
 
-    <!-- Если у тебя есть отдельный script.js, перенеси код выше туда -->
-    <!-- <script src="script.js"></script> -->
-</body>
-</html>
+    // Отладка: если app чёрный — меняем фон body
+    document.body.style.backgroundColor = '#f0f0f0'; // светлый фон на всякий случай
+</script>
