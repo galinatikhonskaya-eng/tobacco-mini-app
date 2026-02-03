@@ -1,756 +1,157 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тобассо - мини-приложение</title>
-    
-    <!-- Font Awesome для иконок -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        /* ========== RESET & BASE ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #1a1a1a;
-            --bg-card: rgba(30, 30, 30, 0.8);
-            --bg-glass: rgba(255, 255, 255, 0.05);
-            --accent-gold: #d4af37;
-            --accent-copper: #b87333;
-            --accent-amber: #ffbf00;
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-muted: rgba(255, 255, 255, 0.5);
-            --border-color: rgba(212, 175, 55, 0.2);
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            --transition-fast: 0.2s ease;
-            --transition-base: 0.3s ease;
-            --gradient-dark: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
-            --gradient-gold: linear-gradient(135deg, #d4af37 0%, #b87333 50%, #ffbf00 100%);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* ========== AGE VERIFICATION MODAL ========== */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal-content {
-            max-width: 500px;
-            width: 100%;
-            padding: 40px;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .warning-icon {
-            font-size: 64px;
-            color: var(--accent-gold);
-            margin-bottom: 20px;
-        }
-
-        .verification-text {
-            margin: 30px 0;
-            line-height: 1.6;
-        }
-
-        .verification-text p {
-            margin: 10px 0;
-        }
-
-        .verification-actions {
-            display: flex;
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .legal-notice {
-            margin-top: 20px;
-            color: var(--text-muted);
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        /* ========== APP CONTAINER ========== */
-        .app-container {
-            min-height: 100vh;
-            background: var(--gradient-dark);
-        }
-
-        /* ========== GLASS EFFECT ========== */
-        .glass {
-            background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-        }
-
-        /* ========== TOP HEADER ========== */
-        .top-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .app-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .app-title i {
-            color: var(--accent-gold);
-        }
-
-        .search-toggle {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
-            transition: all var(--transition-base);
-        }
-
-        .search-toggle:hover {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--accent-gold);
-        }
-
-        /* ========== MAIN CONTENT ========== */
-        .main-content {
-            padding: 20px;
-            padding-bottom: 120px;
-        }
-
-        .screen {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* ========== HOME SCREEN ========== */
-        .promo-banner {
-            position: relative;
-            height: 300px;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            margin-bottom: 40px;
-        }
-
-        .promo-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            padding: 40px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .promo-slide.active {
-            opacity: 1;
-        }
-
-        .promo-content {
-            flex: 1;
-            max-width: 60%;
-            z-index: 2;
-        }
-
-        .promo-title {
-            font-size: 32px;
-            margin-bottom: 15px;
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .promo-description {
-            font-size: 18px;
-            color: var(--text-secondary);
-            margin-bottom: 25px;
-        }
-
-        .promo-image {
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 50%;
-            height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1595245376860-1e388a0c9879?w=800&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
-        }
-
-        /* ========== CATEGORIES ========== */
-        .categories-section {
-            margin-bottom: 40px;
-        }
-
-        .categories-section h2 {
-            font-size: 28px;
-            margin-bottom: 25px;
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .category-card {
-            padding: 25px;
-            border-radius: var(--radius-lg);
-            cursor: pointer;
-            transition: all var(--transition-base);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .category-card.gold {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .category-card.copper {
-            background: linear-gradient(135deg, rgba(184, 115, 51, 0.1) 0%, rgba(184, 115, 51, 0.05) 100%);
-            border: 1px solid rgba(184, 115, 51, 0.2);
-        }
-
-        .category-card.amber {
-            background: linear-gradient(135deg, rgba(255, 191, 0, 0.1) 0%, rgba(255, 191, 0, 0.05) 100%);
-            border: 1px solid rgba(255, 191, 0, 0.2);
-        }
-
-        .category-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
-        }
-
-        .category-name {
-            font-size: 20px;
-            margin-bottom: 10px;
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .category-arrow {
-            position: absolute;
-            right: 25px;
-            bottom: 25px;
-            font-size: 20px;
-            opacity: 0.5;
-            transition: all var(--transition-base);
-        }
-
-        .category-card:hover .category-arrow {
-            opacity: 1;
-            transform: translateX(5px);
-        }
-
-        /* ========== FEATURES ========== */
-        .features-section {
-            margin-top: 50px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .feature-card {
-            text-align: center;
-            padding: 25px 15px;
-            border-radius: var(--radius-lg);
-            background: var(--bg-card);
-        }
-
-        .feature-icon {
-            font-size: 32px;
-            color: var(--accent-gold);
-            margin-bottom: 15px;
-        }
-
-        .feature-card h4 {
-            margin-bottom: 10px;
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .feature-card p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        /* ========== BOTTOM NAVIGATION ========== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 15px 20px;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
-        }
-        
-        .bottom-nav-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all var(--transition-base);
-            padding: 8px 15px;
-            border-radius: var(--radius-md);
-            min-width: 80px;
-        }
-        
-        .nav-item.active {
-            color: var(--accent-gold);
-            background: rgba(212, 175, 55, 0.1);
-        }
-        
-        .nav-item i {
-            font-size: 22px;
-            margin-bottom: 5px;
-        }
-        
-        .nav-item span {
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .nav-item:hover {
-            transform: translateY(-3px);
-        }
-
-        /* ========== BUTTONS ========== */
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-base);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: var(--gradient-gold);
-            color: var(--bg-primary);
-            font-weight: 700;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--accent-gold);
-            color: var(--accent-gold);
-        }
-
-        .btn-outline:hover {
-            background: rgba(212, 175, 55, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUpBottomNav {
-            from {
-                transform: translateY(100%);
-            }
-            to {
-                transform: translateY(0);
-            }
-        }
-
-        .bottom-nav {
-            animation: slideUpBottomNav 0.4s ease;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 768px) {
-            .promo-banner {
-                height: 250px;
-            }
-            
-            .promo-title {
-                font-size: 24px;
-            }
-            
-            .promo-description {
-                font-size: 16px;
-            }
-            
-            .promo-image {
-                width: 40%;
-            }
-            
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .promo-banner {
-                height: 200px;
-            }
-            
-            .promo-content {
-                max-width: 100%;
-                padding: 20px;
-            }
-            
-            .promo-image {
-                display: none;
-            }
-            
-            .verification-actions {
-                flex-direction: column;
-            }
-            
-            .nav-item {
-                min-width: 60px;
-                padding: 6px 10px;
-            }
-            
-            .nav-item i {
-                font-size: 20px;
-            }
-            
-            .nav-item span {
-                font-size: 10px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>АлиБаба Mini — Кальяны и Вейп</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #111;
+      color: #fff;
+    }
+    header {
+      background: #1a1a1a;
+      padding: 15px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    h1 {
+      margin: 0;
+      color: #ff6b00; /* оранжевый как у Alibaba */
+    }
+    .search {
+      margin: 10px 0;
+    }
+    input {
+      width: 80%;
+      padding: 10px;
+      border-radius: 20px;
+      border: none;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+      padding: 15px;
+    }
+    .card {
+      background: #222;
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .info {
+      padding: 10px;
+    }
+    .price {
+      color: #ffcc00;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    button {
+      background: #ff6b00;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    button:hover {
+      background: #e55f00;
+    }
+    .main-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0088cc;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 50px;
+      font-size: 1.1em;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      z-index: 100;
+    }
+  </style>
 </head>
 <body>
-    <!-- Age Verification Modal -->
-    <div class="modal" id="ageModal">
-        <div class="modal-content">
-            <div class="warning-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h1>Доступ только для взрослых</h1>
-            <div class="verification-text">
-                <p>Наш магазин предназначен исключительно для лиц, достигших 18 лет.</p>
-                <p>Подтвердите, что вам есть 18 лет, чтобы продолжить.</p>
-            </div>
-            <div class="verification-actions">
-                <button id="ageConfirm" class="btn btn-primary">
-                    <i class="fas fa-check"></i>
-                    Мне есть 18 лет
-                </button>
-                <button id="ageDeny" class="btn btn-outline">
-                    <i class="fas fa-times"></i>
-                    Мне нет 18 лет
-                </button>
-            </div>
-            <div class="legal-notice">
-                Нажимая кнопку "Мне есть 18 лет", вы подтверждаете свое совершеннолетие и соглашаетесь с условиями использования.
-            </div>
-        </div>
+
+  <header>
+    <h1>АлиБаба Mini</h1>
+    <p>Супермаркет кальянов и вейпа</p>
+    <div class="search">
+      <input type="text" placeholder="Поиск товаров...">
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Примеры товаров — замени картинки и данные на свои -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Кальян">
+      <div class="info">
+        <h3>Кальян Alpha Hookah</h3>
+        <div class="price">₽ 4 990</div>
+        <button onclick="addToCart('Кальян Alpha Hookah')">В корзину</button>
+      </div>
     </div>
 
-    <!-- App Container -->
-    <div class="app-container" id="app" style="display: none;">
-        <!-- Top Header -->
-        <header class="top-header">
-            <div class="app-title">
-                <i class="fas fa-smoking"></i>
-                <span>Тобассо</span>
-            </div>
-            <button class="search-toggle" onclick="openSearch()">
-                <i class="fas fa-search"></i>
-            </button>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Home Screen -->
-            <div class="screen active" id="homeScreen">
-                <!-- Promo Banner -->
-                <div class="promo-banner glass">
-                    <div class="promo-slide active">
-                        <div class="promo-content">
-                            <h2 class="promo-title">Премиум табаки со всего мира</h2>
-                            <p class="promo-description">Эксклюзивные смеси от ведущих производителей с доставкой до двери</p>
-                            <button class="btn btn-primary" onclick="showScreen('catalogScreen')">
-                                Смотреть коллекцию
-                            </button>
-                        </div>
-                        <div class="promo-image"></div>
-                    </div>
-                </div>
-
-                <!-- Categories -->
-                <section class="categories-section">
-                    <h2>Категории товаров</h2>
-                    <div class="categories-grid">
-                        <div class="category-card gold" data-category="hookah">
-                            <i class="fas fa-fire category-icon"></i>
-                            <h3 class="category-name">Кальянные табаки</h3>
-                            <p>Более 50 сортов от мировых брендов</p>
-                            <i class="fas fa-arrow-right category-arrow"></i>
-                        </div>
-                        <div class="category-card copper" data-category="cigarettes">
-                            <i class="fas fa-smoking category-icon"></i>
-                            <h3 class="category-name">Сигареты</h3>
-                            <p>Классика и современные бренды</p>
-                            <i class="fas fa-arrow-right category-arrow"></i>
-                        </div>
-                        <div class="category-card amber" data-category="sticks">
-                            <i class="fas fa-bolt category-icon"></i>
-                            <h3 class="category-name">Стики для нагревания</h3>
-                            <p>Современные альтернативы</p>
-                            <i class="fas fa-arrow-right category-arrow"></i>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Features -->
-                <section class="features-section">
-                    <div class="features-grid">
-                        <div class="feature-card glass">
-                            <i class="fas fa-truck feature-icon"></i>
-                            <h4>Быстрая доставка</h4>
-                            <p>Доставка в день заказа по Москве</p>
-                        </div>
-                        <div class="feature-card glass">
-                            <i class="fas fa-shield-alt feature-icon"></i>
-                            <h4>Гарантия качества</h4>
-                            <p>Только оригинальная продукция</p>
-                        </div>
-                        <div class="feature-card glass">
-                            <i class="fas fa-lock feature-icon"></i>
-                            <h4>Конфиденциальность</h4>
-                            <p>Дискретная упаковка</p>
-                        </div>
-                        <div class="feature-card glass">
-                            <i class="fas fa-headset feature-icon"></i>
-                            <h4>Поддержка 24/7</h4>
-                            <p>Помощь в выборе и консультации</p>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Other screens will be added here -->
-            <div class="screen" id="catalogScreen">
-                <div style="padding: 20px; text-align: center;">
-                    <h2>Каталог товаров</h2>
-                    <p style="margin-top: 20px;">Скоро здесь появится каталог</p>
-                    <button class="btn btn-primary" onclick="showScreen('homeScreen')" style="margin-top: 20px;">
-                        Вернуться на главную
-                    </button>
-                </div>
-            </div>
-        </main>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <div class="bottom-nav-container">
-                <button class="nav-item" onclick="showFavorites()">
-                    <i class="fas fa-heart"></i>
-                    <span>Избранное</span>
-                </button>
-                <button class="nav-item active" onclick="showScreen('homeScreen')">
-                    <i class="fas fa-home"></i>
-                    <span>Главная</span>
-                </button>
-                <button class="nav-item" onclick="showCart()">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Корзина</span>
-                    <span class="cart-badge" id="cartBadge" style="display: none; position: absolute; top: 0; right: 0; background: var(--accent-gold); color: var(--bg-primary); font-size: 10px; padding: 2px 6px; border-radius: 10px;">0</span>
-                </button>
-            </div>
-        </nav>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1606842272845-4e6e0d7e4b0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Табак">
+      <div class="info">
+        <h3>Табак Starbuzz 250г</h3>
+        <div class="price">₽ 1 290</div>
+        <button onclick="addToCart('Табак Starbuzz')">В корзину</button>
+      </div>
     </div>
 
-    <script>
-        // ========== GLOBAL VARIABLES ==========
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1588508091600-1c2e5a0e0a0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Одноразка">
+      <div class="info">
+        <h3>Elf Bar 15000 Puffs</h3>
+        <div class="price">₽ 1 990</div>
+        <button onclick="addToCart('Elf Bar')">В корзину</button>
+      </div>
+    </div>
 
-        // ========== AGE VERIFICATION ==========
-        function initAgeVerification() {
-            const isVerified = localStorage.getItem('ageVerified') === 'true';
-            
-            if (isVerified) {
-                document.getElementById('ageModal').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-            } else {
-                document.getElementById('ageModal').style.display = 'flex';
-                document.getElementById('app').style.display = 'none';
-            }
-            
-            // Setup buttons
-            document.getElementById('ageConfirm').addEventListener('click', () => {
-                localStorage.setItem('ageVerified', 'true');
-                localStorage.setItem('birthDate', new Date().toISOString().split('T')[0]);
-                
-                document.getElementById('ageModal').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-            });
-            
-            document.getElementById('ageDeny').addEventListener('click', () => {
-                alert('Доступ к приложению разрешен только лицам старше 18 лет.');
-            });
-        }
+    <!-- Добавь ещё карточек по аналогии -->
 
-        // ========== SCREEN NAVIGATION ==========
-        function showScreen(screenId) {
-            // Hide all screens
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            
-            // Show target screen
-            const screen = document.getElementById(screenId);
-            if (screen) {
-                screen.classList.add('active');
-            }
-            
-            // Update bottom nav active state
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            if (screenId === 'homeScreen') {
-                document.querySelector('.nav-item:nth-child(2)').classList.add('active');
-            }
-        }
+  </div>
 
-        // ========== BOTTOM NAV FUNCTIONS ==========
-        function showFavorites() {
-            alert('Раздел "Избранное" скоро будет доступен!');
-        }
+  <button class="main-btn" onclick="showCart()">Корзина (0)</button>
 
-        function showCart() {
-            alert('Корзина скоро будет доступна!');
-        }
+  <script>
+    let cart = [];
 
-        function openSearch() {
-            alert('Поиск по товарам скоро будет доступен!');
-        }
+    function addToCart(name) {
+      cart.push(name);
+      alert(name + ' добавлен в корзину!');
+      document.querySelector('.main-btn').textContent = `Корзина (${cart.length})`;
+    }
 
-        // ========== INITIALIZE APP ==========
-        function initApp() {
-            initAgeVerification();
-            
-            // Setup category cards
-            document.querySelectorAll('.category-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    showScreen('catalogScreen');
-                });
-            });
-            
-            // Initialize cart badge
-            updateCartCount();
-        }
+    function showCart() {
+      if (cart.length === 0) {
+        alert('Корзина пуста');
+      } else {
+        alert('В корзине:\n' + cart.join('\n'));
+      }
+    }
 
-        function updateCartCount() {
-            const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
-            const cartBadge = document.getElementById('cartBadge');
-            if (cartBadge) {
-                cartBadge.textContent = count;
-                cartBadge.style.display = count > 0 ? 'block' : 'none';
-            }
-        }
+    // Инициализация Telegram Web App
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand(); // на весь экран
+  </script>
 
-        // ========== START APP ==========
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
 </body>
 </html>
