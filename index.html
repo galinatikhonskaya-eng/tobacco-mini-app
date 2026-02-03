@@ -1,73 +1,86 @@
 <script>
-    // === Инициализация Telegram Mini App ===
+    // === Инициализация Telegram Web App ===
     const tg = window.Telegram.WebApp;
     if (!tg) {
-        console.error('Telegram Web App не инициализирован! Проверь, что ты открываешь через Telegram.');
-        alert('Ошибка: открой приложение в Telegram!');
+        console.error('Telegram Web App НЕ найден! Открой в Telegram.');
+        alert('Ошибка: открой в Telegram!');
     } else {
         tg.ready();
-        tg.expand(); // Разворачиваем на весь экран
-        tg.enableClosingConfirmation(); // Подтверждение закрытия
-        console.log('Telegram Web App загружен. Пользователь:', tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : 'Аноним');
+        tg.expand();
+        tg.enableClosingConfirmation();
+        console.log('Telegram Web App готов. Пользователь:', tg.initDataUnsafe.user?.username || 'Аноним');
     }
 
-    // === Показываем модал по умолчанию ===
+    // === Принудительный фикс фона body/html (чтобы не было чёрного) ===
+    document.body.style.backgroundColor = '#f8f9fa !important';
+    document.body.style.color = '#212529 !important';
+    document.documentElement.style.backgroundColor = '#f8f9fa !important';
+
+    // === Показываем модал ===
     document.getElementById('ageModal').style.display = 'flex';
 
     // === Кнопка "Мне есть 18+" ===
     document.getElementById('ageConfirm').addEventListener('click', function() {
-        console.log('Кнопка "Мне есть 18+" нажата!');
+        console.log('=== Кнопка "Мне есть 18+" нажата! ===');
 
         // Скрываем модал
         document.getElementById('ageModal').style.display = 'none';
 
-        // Показываем основной контент и фиксим возможный чёрный экран
+        // Показываем app с принудительными стилями
         const app = document.getElementById('app');
-        app.style.display = 'block';
-        app.style.visibility = 'visible';
-        app.style.opacity = '1';
-        app.style.backgroundColor = '#ffffff'; // Белый фон на всякий случай
-        app.style.minHeight = '100vh';
-        app.style.color = '#000000';
+        app.style.display = 'block !important';
+        app.style.visibility = 'visible !important';
+        app.style.opacity = '1 !important';
+        app.style.backgroundColor = '#ffffff !important';
+        app.style.minHeight = '100vh !important';
+        app.style.color = '#000000 !important';
 
-        // Фикс body и html (чтобы не было чёрного фона от CSS)
-        document.body.style.backgroundColor = '#f0f0f0';
-        document.documentElement.style.backgroundColor = '#f0f0f0';
+        // Дополнительно фиксим основные контейнеры (на случай, если они скрыты)
+        document.querySelectorAll('.screen, .main-content, .navbar').forEach(el => {
+            el.style.display = 'block !important';
+            el.style.visibility = 'visible !important';
+            el.style.opacity = '1 !important';
+        });
 
-        // Сохраняем подтверждение (чтобы при перезагрузке не показывало модал)
+        // Сохраняем подтверждение
         localStorage.setItem('isAdultConfirmed', 'true');
 
-        // Красивое уведомление от Telegram
+        // Уведомление от Telegram
         tg.showPopup({
             title: 'Добро пожаловать!',
-            message: 'Возраст подтверждён. Наслаждайся покупками!',
+            message: 'Возраст подтверждён. Магазин открыт!',
             buttons: [{ type: 'ok' }]
         });
 
-        console.log('Основной контент показан. Если экран чёрный — проверь CSS в DevTools.');
+        // Задержка для принудительной перерисовки (Telegram иногда тормозит)
+        setTimeout(() => {
+            app.scrollIntoView();
+            console.log('App принудительно показан. display:', app.style.display);
+            console.log('body background:', document.body.style.backgroundColor);
+        }, 100);
+
+        console.log('=== Контент должен появиться. Если чёрный — проверь CSS на background black ===');
     });
 
     // === Кнопка "Мне нет 18" ===
     document.getElementById('ageDeny').addEventListener('click', function() {
-        console.log('Кнопка "Мне нет 18" нажата');
-        tg.showAlert('Доступ запрещён. Приложение закроется.');
-        tg.close(); // Закрываем Mini App
+        console.log('=== Кнопка "Мне нет 18" нажата ===');
+        tg.showAlert('Доступ запрещён. Закрываем приложение.');
+        tg.close();
     });
 
-    // === Если возраст уже подтверждён (при перезагрузке страницы) ===
+    // === Авто-подтверждение при перезагрузке ===
     if (localStorage.getItem('isAdultConfirmed') === 'true') {
         document.getElementById('ageModal').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        document.getElementById('app').style.visibility = 'visible';
-        document.getElementById('app').style.opacity = '1';
-        document.body.style.backgroundColor = '#f0f0f0';
-        console.log('Возраст уже подтверждён — модал скрыт автоматически');
+        document.getElementById('app').style.display = 'block !important';
+        document.body.style.backgroundColor = '#f8f9fa !important';
+        console.log('=== Авто-подтверждение: модал скрыт ===');
     }
 
-    // === Дополнительная отладка: если что-то не видно ===
+    // === Отладка через 3 секунды ===
     setTimeout(() => {
-        console.log('Через 2 секунды: display app =', document.getElementById('app').style.display);
-        console.log('visibility app =', document.getElementById('app').style.visibility);
-        console.log('body background =', document.body.style.backgroundColor);
-    }, 2000);
+        console.log('Отладка через 3с: app display =', document.getElementById('app').style.display);
+        console.log('ageModal display =', document.getElementById('ageModal').style.display);
+        console.log('body bg =', document.body.style.backgroundColor);
+    }, 3000);
 </script>
