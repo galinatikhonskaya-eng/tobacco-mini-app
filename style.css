@@ -840,3 +840,75 @@ body {
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid
+    /* Стили для тостов (уведомлений) */
+.toast {
+    padding: 15px 20px;
+    background: var(--bg-card);
+    border-left: 4px solid var(--accent-gold);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.3s ease;
+    margin-bottom: 10px;
+    font-size: 14px;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.toast.success {
+    border-left-color: #4CAF50;
+}
+
+.toast.error {
+    border-left-color: #f44336;
+}
+
+.toast.info {
+    border-left-color: #2196F3;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Кнопки в состоянии disabled */
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn:disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Стили для экрана оплаты */
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-color);
+}
+    
