@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tobacco Market</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    <div class="logo">Tobacco</div>
+    <button class="search-btn">🔍</button>
+  </header>
+
+  <!-- BANNER -->
+  <div class="banner">
+    <h2>Акции и новинки</h2>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="categories">
+    <div class="category">
+      <div class="cat-icon">💨</div>
+      <span>Кальяны</span>
+    </div>
+    <div class="category">
+      <div class="cat-icon">🔥</div>
+      <span>Табак</span>
+    </div>
+    <div class="category">
+      <div class="cat-icon">⚡</div>
+      <span>POD</span>
+    </div>
+    <div class="category">
+      <div class="cat-icon">🧴</div>
+      <span>Жидкости</span>
+    </div>
+  </div>
+
+  <!-- POPULAR -->
+  <div class="section-title">
+    Популярные товары →
+  </div>
+
+  <div class="products">
+    <div class="product-card">
+      <div class="product-image"></div>
+      <div class="product-info">
+        <h3>Aroma Havana</h3>
+        <p>Сигариллы Cherry</p>
+        <span class="price">890 ₽</span>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-image"></div>
+      <div class="product-info">
+        <h3>Dark Size</h3>
+        <p>Ароматизатор</p>
+        <span class="price">650 ₽</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div>🏠<span>Главная</span></div>
+    <div>📍<span>Магазины</span></div>
+    <div>👤<span>Профиль</span></div>
+    <div>🛒<span>Корзина</span></div>
+  </nav>
+
+</div>
+
+<!-- SIDE MENU -->
+<div class="side-menu" id="sideMenu">
+  <div class="close" onclick="closeMenu()">✕</div>
+  <ul>
+    <li>Кальяны</li>
+    <li>Табак</li>
+    <li>POD системы</li>
+    <li>Жидкости</li>
+    <li>Аксессуары</li>
+  </ul>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
