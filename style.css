@@ -4,41 +4,47 @@ body {
   background: #f3f3f3;
 }
 
+/* HEADER */
 .header {
   background: #000;
   color: #f4c400;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-weight: bold;
 }
 
-.menu-btn, .search-btn {
+.menu-btn,
+.search-btn {
   background: #f4c400;
   border: none;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
+  cursor: pointer;
 }
 
 .logo {
   font-size: 20px;
 }
 
+/* BANNER */
 .banner {
   background: #f4c400;
-  padding: 20px;
-  margin: 10px;
-  border-radius: 12px;
+  padding: 22px;
+  margin: 14px;
+  border-radius: 18px;
   font-weight: bold;
+  font-size: 18px;
 }
 
+/* CATEGORIES */
 .categories {
   display: flex;
   overflow-x: auto;
-  padding: 10px;
-  gap: 14px;
+  padding: 10px 16px;
+  gap: 20px;
 }
 
 .category {
@@ -51,46 +57,54 @@ body {
   margin-bottom: 6px;
 }
 
+/* SECTION */
 .section-title {
-  padding: 10px 16px;
+  padding: 16px;
   font-weight: bold;
+  font-size: 16px;
 }
 
+/* PRODUCTS */
 .products {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 0 12px 80px;
+  gap: 14px;
+  padding: 0 14px 100px;
 }
 
 .product-card {
   background: white;
-  border-radius: 12px;
-  padding: 10px;
+  border-radius: 20px;
+  padding: 12px;
 }
 
 .product-image {
   height: 120px;
   background: #ddd;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  border-radius: 14px;
+  margin-bottom: 10px;
 }
 
 .price {
   color: #f4c400;
   font-weight: bold;
+  margin-top: 6px;
 }
 
+/* BOTTOM NAV — iPhone glass */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background: white;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   display: flex;
   justify-content: space-around;
-  padding: 10px 0;
-  border-top: 1px solid #ddd;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,0.4);
   font-size: 12px;
+  z-index: 999;
 }
 
 .bottom-nav div {
@@ -99,32 +113,52 @@ body {
   align-items: center;
 }
 
+/* SIDE MENU — iPhone glass */
 .side-menu {
   position: fixed;
-  left: -260px;
+  left: -280px;
   top: 0;
-  width: 250px;
+  width: 260px;
   height: 100%;
-  background: white;
-  transition: 0.3s;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: 0.35s ease;
   padding: 20px;
+  z-index: 9999;
+  box-shadow: 2px 0 20px rgba(0,0,0,0.2);
 }
 
 .side-menu ul {
   list-style: none;
   padding: 0;
+  margin-top: 40px;
 }
 
 .side-menu li {
-  padding: 14px 0;
-  border-bottom: 1px solid #eee;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  font-weight: 500;
 }
 
 .side-menu.active {
   left: 0;
 }
 
-.close {
-  text-align: right;
-  cursor: pointer;
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+  z-index: 5000;
+}
+
+.overlay.active {
+  opacity: 1;
+  pointer-events: all;
 }
